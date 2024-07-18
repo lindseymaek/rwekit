@@ -12,6 +12,7 @@
 #' @param round.places a single integer count of decimal places to include in summary statistic reporting, or an integer vector of length(cols) with the count of decimal places to be reported for each corresponding col
 #' @param round.percent integer count of decimal places to include in percentage reporting
 #' @param format if TRUE (default) then a formatted character column is generated with both the count and percentage concatenated as: "count (percentage)"
+#' @param total.column if TRUE, then statistics are reported for the total dataset in addition to the levels of group
 #' @param group.exclude.levels optional vector with levels of group to exclude from report
 #' @param col.exclude.levels optional vector with levels of variables in cols to exclude from report
 #' @param return.summaries a vector of formatted summary statistics: "count_percent", "mean_sd", "median_iqr", "median_minmax". All included by default.
@@ -82,6 +83,7 @@ report_characteristics = function(d,
                                   round.places=1,
                                   round.percent = 0,
                                   format=TRUE,
+                                  total.column=TRUE,
                                   group.exclude.levels=NULL,
                                   col.exclude.levels=NULL,
                                   return.summaries=c("count_percent", "mean_sd", "median_iqr", "median_minmax"),
@@ -133,7 +135,36 @@ report_characteristics = function(d,
 
   }
 
+  if (!is.null(group) & total.column == TRUE) {
+    total_summary_cat = report_frequency(d,
+                                         cols=cat.cols,
+                                         group=NULL,
+                                         round.percent,
+                                         format,
+                                         group.exclude.levels,
+                                         col.exclude.levels)
 
+    df_summary_cat = df_summary_cat %>%
+      dplyr::inner_join(total_summary_cat, by=c("var_name", "var_levels", "measure_name")) %>%
+      dplyr::relocate(var_name, var_levels, measure_name, count_percent) %>%
+      dplyr::rename("total"="count_percent")
+
+    total_summary_num = report_numuniv(d,
+                                    cols=num.cols,
+                                    group=NULL,
+                                    round.places,
+                                    round.percent,
+                                    format,
+                                    return.summaries,
+                                    return.summaries.bycol)
+
+    df_summary_num = df_summary_num %>%
+      dplyr::inner_join(total_summary_num, by=c("var_name", "measure_name")) %>%
+      dplyr::relocate(var_name, measure_name, value) %>%
+      dplyr::rename("total"="value")
+
+  }
+#dplyr::mutate(var_levels = NA) %>%
     if (!is.null(cat.cols)&!is.null(num.cols)) {
       if (format==TRUE) {
         df_summary <- df_summary_cat %>% dplyr::bind_rows(df_summary_num)

@@ -53,19 +53,19 @@ report_frequency = function(d,
   if (format==TRUE){
 
     df_format = df_comp %>%
-      dplyr::mutate(Freq_percent = paste0(prettyNum(frequency, big.mark = ",", scientific = FALSE), " (", percent, ")"),
+      dplyr::mutate(count_percent = paste0(prettyNum(frequency, big.mark = ",", scientific = FALSE), " (", percent, ")"),
                     measure_name = "count_percent") %>%
       dplyr::filter(!var_levels %in% col.exclude.levels)
 
     if (!is.null(group)){
 
       df_format = df_format %>%
-        dplyr::select(var_name,var_levels, measure_name,group_levels, Freq_percent) %>%
+        dplyr::select(var_name,var_levels, measure_name,group_levels, count_percent) %>%
         dplyr::filter(!group_levels %in% group.exclude.levels) %>%
-        tidyr::pivot_wider(names_from = "group_levels", values_from = "Freq_percent", names_prefix="group_levels")
+        tidyr::pivot_wider(names_from = "group_levels", values_from = "count_percent", names_prefix="group_levels")
     } else {
       df_format = df_format %>%
-        dplyr::select(var_name, var_levels, measure_name,Freq_percent)
+        dplyr::select(var_name, var_levels, measure_name,count_percent)
     }
 
     return(df_format)

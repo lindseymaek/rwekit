@@ -125,7 +125,6 @@ report_numuniv <- function(d,
     names(list_summary) <- return.summaries;
     list_summary <- list_summary %>%
       purrr::list_rbind(names_to = "measure_name") %>%
-      dplyr::mutate(var_levels = NA) %>%
       dplyr::relocate(var_name, measure_name) %>%
       dplyr::arrange(var_name);
     df_summary <- list_summary;
