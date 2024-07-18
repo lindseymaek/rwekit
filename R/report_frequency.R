@@ -47,17 +47,20 @@ report_frequency = function(d,
   df_comp = d %>%
     dplyr::select(all_of(cols)) %>%
     as.list() %>%
-    purrr:::map(compute_frequency, group=group_col,round.percent=round.percent,group.exclude.levels=group.exclude.levels) %>%
+    purrr:::map(compute_frequency,
+                group=group_col,
+                round.percent=round.percent,
+                group.exclude.levels=group.exclude.levels) %>%
     purrr::list_rbind(names_to = "var_name");
 
-  if (format==TRUE){
+  if (format==TRUE) {
 
     df_format = df_comp %>%
       dplyr::mutate(count_percent = paste0(prettyNum(frequency, big.mark = ",", scientific = FALSE), " (", percent, ")"),
                     measure_name = "count_percent") %>%
       dplyr::filter(!var_levels %in% col.exclude.levels)
 
-    if (!is.null(group)){
+    if (!is.null(group)) {
 
       df_format = df_format %>%
         dplyr::select(var_name,var_levels, measure_name,group_levels, count_percent) %>%
@@ -69,7 +72,15 @@ report_frequency = function(d,
     }
 
     return(df_format)
+
   } else {
+    df_comp <- df_comp %>%
+      dplyr::filter(!var_levels %in% col.exclude.levels)
+
+    if(!is.null(group)) {
+      df_comp <- df_comp %>%
+        dplyr::filter(!group_levels %in% group.exclude.levels)
+    }
     return(df_comp)
   }
 }
