@@ -8,9 +8,34 @@ report_model_cph = function(x,
                             round.estimate=2,
                             d=NULL,
                             ...) {
+
+  ### Section 1 ### outcome frequency
+
+  # vector of modeling variables is extracted from the formula instead of model object
+  mod_vars = stringr::str_split(as.character(test[["terms"]][[3]]), pattern=stringr::fixed("+")) %>%
+    unlist() %>%
+    stringr::str_subset(".+") %>%
+    trimws()
+  # unless specified, data type is identified from the input dataframe
+  d_fc_vars = sample_data %>% dplyr::select_if(function(x) is.character(x) | is.factor(x)) %>% colnames()
+  mod_fc_vars = mod_vars[mod_vars %in% d_fc_vars]
+
+  fc_vars_minlevels = lapply(mod_fc_vars, function(x) {sample_data %>% dplyr::select(x) %>% unique() %>% dplyr::pull() %>% as.character() %>% min(na.rm=TRUE)})
+
+  # step 3 apply to report frequency
+
+  purrr::map2(mod_fc_vars,fc_vars_minlevels, function(x,y) report_frequency(sample_data, cols="outcome_flag", group=x, format=FALSE, col.exclude.levels = 0) %>%
+                dplyr::mutate(reference_level = ratio[which(group_levels==y)],
+                              term = paste0(x,group_levels)) %>%
+                dplyr::filter(group_levels != y) %>%
+                dplyr::rename("comparison_level"="ratio")) %>%
+    dplyr::bind_rows
+
+
     mod = x;
     names(variable.labels) = c("variables","variable_labels")
     terms = unlist(mod$assign) %>% as.data.frame() %>% rownames_to_column();
+    # identify variables modeled as factors
     cat.vars = names(mod$xlevels);
 
     if (!is.null(cat.vars)) {
