@@ -11,7 +11,7 @@
 
 
 format_pvalues <- function(x,
-                      method = c(1,2),
+                      method = 1,
                       lead.zero = TRUE) {
   p.value = x;
 
