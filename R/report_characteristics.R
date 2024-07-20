@@ -76,41 +76,23 @@
 #'
 
 report_characteristics = function(d,
-                                  cat.cols,
-                                  num.cols,
-                                  cols=NULL,
-                                  group=NULL,
-                                  round.places=1,
+                                  cat.cols = NULL,
+                                  num.cols = NULL,
+                                  group = NULL,
+                                  round.places = 1,
                                   round.percent = 0,
-                                  format=TRUE,
-                                  total.column=TRUE,
-                                  group.exclude.levels=NULL,
-                                  col.exclude.levels=NULL,
-                                  return.summaries=c("count_percent", "mean_sd", "median_iqr", "median_minmax"),
-                                  return.summaries.bycol=NULL) {
+                                  format = TRUE,
+                                  total.column = TRUE,
+                                  group.exclude.levels = NULL,
+                                  col.exclude.levels = NULL,
+                                  return.summaries = c("count_percent", "mean_sd", "median_iqr", "median_minmax"),
+                                  return.summaries.bycol = NULL) {
 
-  if (!is.null(cols)&!is.null(cat.cols)&!is.null(num.cols)) {
-    warning("Warning: Inputs for cat.cols and num.cols detected; cols will be ignored.")
-  }
+  if (is.null(cat.cols) & is.null(num.cols)) {
 
-  if (is.null(cat.cols)) {
-    if (!is.null(cols)) {
-      cat.cols <- d %>% dplyr::select(cols) %>% dplyr::select_if(function(x) is.character(x) | is.factor(x)) %>% colnames()
+      cat.cols <- d %>% dplyr::select_if(function(x) is.character(x) | is.factor(x)) %>% colnames()
+      num.cols <- d %>% dplyr::select_if(is.numeric) %>% colnames()
 
-      if (length(cat.cols)==0) {
-        cat.cols<-NULL;
-      }
-    }
-  }
-
-  if (is.null(num.cols)) {
-    if (!is.null(cols)) {
-      num.cols <- d %>% dplyr::select(cols) %>% dplyr::select_if(is.numeric) %>% colnames()
-
-      if (length(num.cols)==0) {
-        num.cols<-NULL;
-      }
-    }
   }
 
   if (!is.null(cat.cols)) {
@@ -163,21 +145,33 @@ report_characteristics = function(d,
       dplyr::relocate(var_name, measure_name, value) %>%
       dplyr::rename("total"="value")
 
-  } else if (is.null(group)) {
+  } else if (is.null(group) & format == TRUE & !is.null(cat.cols)) {
+
     df_summary_cat <- df_summary_cat %>%
       dplyr::rename("value"="count_percent")
+
   }
-#dplyr::mutate(var_levels = NA) %>%
-    if (!is.null(cat.cols)&!is.null(num.cols)) {
+
+    if (!is.null(cat.cols) & !is.null(num.cols)) {
+
       if (format==TRUE) {
+
         df_summary <- df_summary_cat %>% dplyr::bind_rows(df_summary_num)
+
       } else {
+
         df_summary <- list(df_summary_cat, df_summary_num)
+
       }
-    } else if (!is.null(cat.cols)&is.null(num.cols)) {
+
+    } else if (!is.null(cat.cols) & is.null(num.cols)) {
+
       df_summary <- df_summary_cat
+
     } else if (is.null(cat.cols)&!is.null(num.cols)) {
+
       df_summary <- df_summary_num
+
     }
 
   return(df_summary)

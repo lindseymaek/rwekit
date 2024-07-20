@@ -1,0 +1,116 @@
+---
+title: "rwekit analysis workflows"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rwekit analysis workflows}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rwekit)
+library(tidyverse)
+library(forestplot)
+```
+
+# Introduction
+
+The official tagline of rwekit (Real World Evidence kit) is that it contains tools for real world evidence reporting and beyond (aka any field that reports univariate statistics and modeling summaries).
+
+It will be obvious to many in this space that rwekit is therefore a package that reinvents many existing and better wheels that offer greater functionality for statistical reporting and return a more polished out-of-the-box product (tips hat to broom, gtsummary, Table1). Hindsight is always 20/20 looking back earlier career to the software one could have adopted more easily than writing anew pending a deadline, but there are still times where this code is useful in analytical workflows, and is shared on that merit.
+
+This vignette will cover the specific tasks that rwekit supports within workflows for clinical evidence analysis, and is generally written with an earlier-career data scientist audience in mind, but is not intended to be an exhaustive template for a complete analysis. The emphasis of the rwekit package functionality is on reporting, which assumes a polished input derived from critically evaluated data and carefully developed models. Topics include data pre-processing, cohort description, bivariate effect size, and reporting models in tables and figures.
+
+## Sample data
+
+```{r}
+# generate some random data for a made-up patient cohort
+size = 2500
+patient_id = sample(1:1000000,size) 
+sample_data = as.data.frame(patient_id) %>%
+  dplyr::mutate(outcome_flag = rbinom(size, 1, prob = c(0.1)),
+                binary_var = factor(rbinom(size,1,prob=c(0.7))),
+                numeric_var1=round(rchisq(size,5)),
+                numeric_var2=runif(size),
+                cat_var=factor(rbinom(size,3,prob=c(0.5)))) %>%
+  dplyr::mutate(numeric_var1 = ifelse(outcome_flag==0, numeric_var1*numeric_var2,numeric_var1),
+                cat_var = dplyr::case_when(cat_var==0~"A",
+                                          cat_var==1~"B",
+                                          cat_var==2~"C",
+                                          TRUE ~ "D"))
+```
+
+
+# Setting data types with set_coltype_byname()
+
+Failure to evaluate column types is always a bad idea with tremendous error (and regret) potential, but can be a great temptation given the luxury of having been provisioned a high-quality analytic-ready dataset (dreams do come true). Setting data types is only part of a complete pre-processing routine, but particularly if the data is built upon a well-designed data model, as encountered in the RWE space, this function can be used to leverage naming conventions to simplify this task. 
+
+```{r}
+# generating some messy data for proof of concept
+messy_df = data.frame(to_num_col = c("1" ,"2" , "NULL", "5"),
+                      to_date_col = c("2021-01-01", "2022-01-01", "2023-01-01", "NULL"),
+                      to_factor_col = c(1,0,0,0),
+                      to_character_col = c(123,456,568,789))
+
+# check out the chaos
+glimpse(messy_df)
+```
+
+Use the trim.names argument to remove "_col" from the column names because it doesn't provide any additional information and is going to get old to type again and again. Then we'll use unique strings that will identify the columns to be converted to each data type with the "features" arguments. While this has been made obvious in this purpose-built example, use caution in setting these arguments to avoid unspecific strings that provide unexpected results and verify results before proceeding.
+
+```{r}
+clean_df = set_coltype_byname(messy_df,
+                   trim.names = "_col",
+                   numeric.features = "num",
+                   factor.features = "fact",
+                   character.features = "char",
+                   date.features = "date",
+                   date.format = "%Y-%m-%d")
+
+# good to go
+dplyr::glimpse(clean_df)
+```
+# Cohort description with report_characteristics()
+
+Cohort description is a keystone of a clinical manuscript but also because much work in the RWE space is hypothesis-generating, is an inherent part of data exploration. Reporting characteristics with the rwekit package can be as simple as the output provided by providing only the dataset.
+
+When columns aren't specified by the cat.cols and num.cols arguments, all columns in the are reported according to the datatype. This is a simple first pass for exploratory purposes, but is likely too much information for reporting ones.
+
+```{r}
+report_characteristics(sample_data)
+```
+
+## Categorical variable formatting options 
+
+Now columns of interest are specified directly in the output below. The col.exclude.levels argument has been set with each level of categorical variables desired to exclude from the output. 
+
+```{r}
+report_characteristics(sample_data,
+                      cat.cols = c("cat_var","binary_var"),
+                      col.exclude.levels = c(0,NA))
+
+
+# write.csv(table1, "table1.csv")
+```
+
+```{r}
+report_characteristics(sample_data,
+                      num.cols = c("numeric_var1","numeric_var2"),
+                      return.summaries = c("count_percent", "mean_sd", "median_iqr")
+)
+
+```
+
+
+# Bivariate effect size with report_unadjusted()
+
+# Report modeling summaries with report_model()
+
+## Formatting with the forestplot package
