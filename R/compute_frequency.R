@@ -28,11 +28,11 @@
 compute_frequency <- function(x, group=NULL, round.percent=0, group.exclude.levels=NULL) {
   name_count <- names(x)
   if (!is.null(group)) {
-    t <- as.data.frame(table(x,group))
+
     if (!is.null(group.exclude.levels)) {
       t <- t %>% dplyr::filter(!group %in% group.exclude.levels)
     }
-    t <- table(x,group) %>%
+    t <- table(x,group, useNA = "ifany") %>%
       as.data.frame()
     names(t) = c("var_levels", "group_levels", "frequency")
     t <- t %>%
@@ -41,13 +41,12 @@ compute_frequency <- function(x, group=NULL, round.percent=0, group.exclude.leve
                     percent = sprintf(paste0("%.",round.percent,"f"),100*frequency/sum(frequency)))
     return(t)
   } else {
-    input <- x
-    t <- as.data.frame(table(x))
+
+    t <- as.data.frame(table(x, useNA = "ifany"))
+    names(t) = c("var_levels", "frequency")
     t <- t %>%
-      dplyr::rename("frequency"="Freq") %>%
-      dplyr::mutate(percent = sprintf(paste0("%.",round.percent,"f"),((100*frequency)/length(input))),
-             ratio = paste0(prettyNum(frequency, big.mark=","), "/", prettyNum(length(input), big.mark=","))) %>%
-      dplyr::rename("var_levels"="x")
+      dplyr::mutate(percent = sprintf(paste0("%.",round.percent,"f"),((100*frequency)/length(x))),
+                    ratio = paste0(prettyNum(frequency, big.mark=","), "/", prettyNum(length(x), big.mark=",")))
     return(t)
   }
 }
