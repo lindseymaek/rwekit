@@ -18,7 +18,7 @@ if (!is.null(outcome.var)) {
   }
 
   # vector of modeling variables is extracted from the formula instead of model object
-  mod_vars <- stringr::str_split(as.character(test[["terms"]][[3]]), pattern=stringr::fixed("+")) %>%
+  mod_vars <- stringr::str_split(as.character(x[["terms"]][[3]]), pattern=stringr::fixed("+")) %>%
     unlist() %>%
     stringr::str_subset(".+") %>%
     trimws()

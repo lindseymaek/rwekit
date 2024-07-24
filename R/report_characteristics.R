@@ -85,7 +85,7 @@ report_characteristics = function(d,
                                   total.column = TRUE,
                                   group.exclude.levels = NULL,
                                   col.exclude.levels = NULL,
-                                  return.summaries = c("count_percent", "mean_sd", "median_iqr", "median_minmax"),
+                                  return.summaries = c("count_percent", "mean_sd"),
                                   return.summaries.bycol = NULL) {
 
   if (is.null(cat.cols) & is.null(num.cols)) {
