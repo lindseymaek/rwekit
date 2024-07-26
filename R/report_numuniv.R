@@ -78,20 +78,24 @@ report_numuniv <- function(d,
     as.list()
 
   if (!is.null(group)) {
-    group_list = d %>% dplyr::select(all_of(group)) %>% as.list()
+    group_list <- d %>% dplyr::select(all_of(group)) %>% as.list()
   } else {
-    group_list=list(NULL)
+    group_list <- list(NULL)
   }
 
   if (length(round.places)==1) {
-    place_list = c(rep(round.places, length(cols))) %>% as.list()
+    place_list <- c(rep(round.places, length(cols))) %>% as.list()
   } else {
-    place_list = round.places %>% as.list()
+    place_list <- round.places %>% as.list()
   }
 
   df_summary <- purrr::pmap(list(col_list,group_list,place_list), .f=function(var,group,place){compute_numuniv(var,group,place)}) %>%
-    purrr::list_rbind(names_to = "var_name") %>%
+    purrr::list_rbind(names_to = "var_name")
+
+  if (!is.null(group)) {
+    df_summary <- df_summary %>%
     dplyr::filter(!group_levels %in% group.exclude.levels)
+  }
 
   if (format == TRUE){
     df_summary <- df_summary %>%

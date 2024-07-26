@@ -121,7 +121,7 @@ report_characteristics <- function(d,
           dplyr::relocate(var_name, measure_name, count_percent) %>%
           dplyr::rename("total"="count_percent")
 
-      }  else if (is.null(group) & total.column == FALSE) {
+      }  else if (is.null(group)) {
 
         df_summary_cat <- df_summary_cat %>%
           dplyr::rename("value"="count_percent")
