@@ -15,28 +15,28 @@ compute_numuniv = function(x,
                            group=NULL,
                            round.places=NULL) {
 
-  x = as.data.frame(x)
+  x_name <- names(as.data.frame(x))
+  y <- as.data.frame(x)
 
   if (!is.null(group)) {
-    x = x %>% dplyr::group_by(dplyr::all_of(group))
+    y <- as.data.frame(x, group) %>% group_by({{group}})
     }
 
-  summary_df = x %>%
-                        dplyr::summarize(mean = mean(x, na.rm = TRUE),
-                        stdev = sd(x, na.rm = TRUE),
-                        min = min(x, na.rm = TRUE),
-                        max = max(x, na.rm = TRUE),
-                        median = median(x, na.rm = TRUE),
-                        q.25 = quantile(x, probs = 0.25, na.rm = TRUE, type = 2),
-                        q.75 = quantile(x, probs = 0.75, na.rm = TRUE, type = 2),
-                        count = sum(!is.na(x)),
-                        percent = 100*sum(!is.na(x))/length(x),
-                        missing_count = sum(is.na(x)),
-                        missing_percent = 100*sum(is.na(x))/length(x));
+  summary_df <- y %>%
+    dplyr::summarize(mean = mean(.data[[x_name]], na.rm = TRUE),
+                     stdev = sd(.data[[x_name]], na.rm = TRUE),
+                     min = min(.data[[x_name]], na.rm = TRUE),
+                     max = max(.data[[x_name]], na.rm = TRUE),
+                     median = median(.data[[x_name]], na.rm = TRUE),
+                     q.25 = quantile(.data[[x_name]], probs = 0.25, na.rm = TRUE, type = 2),
+                     q.75 = quantile(.data[[x_name]], probs = 0.75, na.rm = TRUE, type = 2),
+                     count = sum(!is.na(.data[[x_name]])),
+                     percent = 100*sum(!is.na(.data[[x_name]]))/length(.data[[x_name]]),
+                     missing_count = sum(is.na(.data[[x_name]])),
+                     missing_percent = 100*sum(is.na(.data[[x_name]]))/length(.data[[x_name]]));
 
   if (!is.null(group)) {
-    summary_df = summary_df %>%
-      dplyr::rename("group_levels"="dplyr::all_of(group)")
+    names(summary_df)[1] <- "group_levels"
   }
 
   if (!is.null(round.places)) {
