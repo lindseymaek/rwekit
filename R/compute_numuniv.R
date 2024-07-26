@@ -19,7 +19,7 @@ compute_numuniv = function(x,
   y <- as.data.frame(x)
 
   if (!is.null(group)) {
-    y <- as.data.frame(x, group) %>% group_by({{group}})
+    y <- cbind.data.frame(x, group) %>% group_by({{group}})
     }
 
   summary_df <- y %>%

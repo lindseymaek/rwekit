@@ -69,6 +69,7 @@ report_numuniv <- function(d,
                            round.places=1,
                            round.percent=1,
                            format=TRUE,
+                           group.exclude.levels=NULL,
                            return.summaries,
                            return.summaries.bycol=NULL) {
 
@@ -89,7 +90,8 @@ report_numuniv <- function(d,
   }
 
   df_summary <- purrr::pmap(list(col_list,group_list,place_list), .f=function(var,group,place){compute_numuniv(var,group,place)}) %>%
-    purrr::list_rbind(names_to = "var_name")
+    purrr::list_rbind(names_to = "var_name") %>%
+    dplyr::filter(!group_levels %in% group.exclude.levels)
 
   if (format == TRUE){
     df_summary <- df_summary %>%

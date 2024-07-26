@@ -49,8 +49,7 @@ report_frequency = function(d,
     as.list() %>%
     purrr:::map(compute_frequency,
                 group=group_col,
-                round.percent=round.percent,
-                group.exclude.levels=group.exclude.levels) %>%
+                round.percent=round.percent) %>%
     purrr::list_rbind(names_to = "var_name");
 
   if (format==TRUE) {

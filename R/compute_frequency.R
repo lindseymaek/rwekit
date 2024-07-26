@@ -25,16 +25,14 @@
 #' compute_frequency(mock_data$rare_event, mock_data$rare_event,group.display.levels = c(1))
 #' }
 #'
-compute_frequency <- function(x, group=NULL, round.percent=0, group.exclude.levels=NULL) {
+compute_frequency <- function(x, group=NULL, round.percent=0) {
   name_count <- names(x)
   if (!is.null(group)) {
 
-    if (!is.null(group.exclude.levels)) {
-      t <- t %>% dplyr::filter(!group %in% group.exclude.levels)
-    }
     t <- table(x,group, useNA = "ifany") %>%
       as.data.frame()
     names(t) = c("var_levels", "group_levels", "frequency")
+
     t <- t %>%
       dplyr::group_by(group_levels) %>%
       dplyr::mutate(ratio = paste0(prettyNum(frequency, big.mark=","),"/",prettyNum(sum(frequency),big.mark=",")),

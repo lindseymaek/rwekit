@@ -75,7 +75,7 @@
 #' }
 #'
 
-report_characteristics = function(d,
+report_characteristics <- function(d,
                                   cat.cols = NULL,
                                   num.cols = NULL,
                                   group = NULL,
@@ -96,7 +96,7 @@ report_characteristics = function(d,
   }
 
   if (!is.null(cat.cols)) {
-    df_summary_cat = report_frequency(d,
+    df_summary_cat <- report_frequency(d,
                                       cols=cat.cols,
                                       group,
                                       round.percent,
@@ -104,35 +104,42 @@ report_characteristics = function(d,
                                       group.exclude.levels,
                                       col.exclude.levels)
 
-    if (!is.null(group) & total.column == TRUE) {
-      total_summary_cat = report_frequency(d,
-                                           cols=cat.cols,
-                                           group=NULL,
-                                           round.percent,
-                                           format,
-                                           group.exclude.levels,
-                                           col.exclude.levels)
+    if (format == TRUE) {
 
-      df_summary_cat = df_summary_cat %>%
-        dplyr::inner_join(total_summary_cat, by=c("var_name", "measure_name")) %>%
-        dplyr::relocate(var_name, measure_name, count_percent) %>%
-        dplyr::rename("total"="count_percent")
+      if (!is.null(group) & total.column == TRUE) {
 
-    }  else if (is.null(group) & format == TRUE) {
+        total_summary_cat <- report_frequency(d,
+                                              cols=cat.cols,
+                                              group=NULL,
+                                              round.percent,
+                                              format,
+                                              group.exclude.levels,
+                                              col.exclude.levels)
 
-      df_summary_cat <- df_summary_cat %>%
-        dplyr::rename("value"="count_percent")
+        df_summary_cat <- df_summary_cat %>%
+          dplyr::inner_join(total_summary_cat, by=c("var_name", "measure_name")) %>%
+          dplyr::relocate(var_name, measure_name, count_percent) %>%
+          dplyr::rename("total"="count_percent")
+
+      }  else if (is.null(group) & total.column == FALSE) {
+
+        df_summary_cat <- df_summary_cat %>%
+          dplyr::rename("value"="count_percent")
+
+      }
 
     }
+
   }
 
    if (!is.null(num.cols)) {
-    df_summary_num = report_numuniv(d,
+    df_summary_num <- report_numuniv(d,
                                     cols=num.cols,
                                     group,
                                     round.places,
                                     round.percent,
                                     format,
+                                    group.exclude.levels,
                                     return.summaries,
                                     return.summaries.bycol)
 
@@ -144,13 +151,19 @@ report_characteristics = function(d,
                                          round.places,
                                          round.percent,
                                          format,
+                                         group.exclude.levels,
                                          return.summaries,
                                          return.summaries.bycol)
 
-      df_summary_num <- df_summary_num %>%
-        dplyr::inner_join(total_summary_num, by=c("var_name", "measure_name")) %>%
-        dplyr::relocate(var_name, measure_name, value) %>%
-        dplyr::rename("total"="value")
+      if (format==TRUE) {
+
+        df_summary_num <- df_summary_num %>%
+          dplyr::inner_join(total_summary_num, by=c("var_name", "measure_name")) %>%
+          dplyr::relocate(var_name, measure_name, value) %>%
+          dplyr::rename("total"="value")
+
+
+      }
 
       }
 
