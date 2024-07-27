@@ -3,30 +3,30 @@ report_unadjusted <- function(d,
                               model = c("glm_binomial", "glm_gaussian", "survival_coxph"),
                               outcome.var,
                               time.var,
-                              dependent.vars,
+                              model.vars,
                               round.estimate = 2,
                               ...
                               ) {
 
-  dependent.vars = as.list(dependent.vars);
+  model.vars = as.list(model.vars);
 
   if(model=="glm_gaussian") {
 
-    unadj.out <- lapply(dependent.vars,
+    unadj.out <- lapply(model.vars,
                         FUN = function(x) {broom::tidy(glm(as.formula(paste(outcome.var, "~",x)), data = d,family = "gaussian"), exponentiate = TRUE, conf.int=TRUE, ...)}) %>%
       dplyr::bind_rows() %>%
       dplyr::filter(term!= "(Intercept)")
 
   } else if(model=="glm_binomial") {
 
-    unadj.out <- lapply(dependent.vars,
+    unadj.out <- lapply(model.vars,
                         FUN = function(x) {broom::tidy(glm(as.formula(paste(outcome.var, "~",x)), data = d,family = "binomial"), exponentiate = TRUE, conf.int=TRUE, ...)}) %>%
       dplyr::bind_rows() %>%
       dplyr::filter(term!= "(Intercept)")
 
   } else if(model=="survival_coxph") {
 
-    unadj.out <- lapply(dependent.vars,
+    unadj.out <- lapply(model.vars,
                         FUN = function(x) {broom::tidy(survival::coxph(as.formula(paste("survival::Surv(time = ", time.var, ", event = ", outcome.var,") ~", x)), data = d), exponentiate = TRUE, conf.int=TRUE, ...)}) %>%
       dplyr::bind_rows()
 
