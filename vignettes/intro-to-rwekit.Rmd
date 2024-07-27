@@ -1,6 +1,7 @@
 ---
 title: "rwekit analysis workflows"
 output: rmarkdown::html_vignette
+author: "Lindsey Kornowske"
 vignette: >
   %\VignetteIndexEntry{rwekit analysis workflows}
   %\VignetteEngine{knitr::rmarkdown}
@@ -22,11 +23,11 @@ library(forestplot)
 
 # Introduction
 
-The official tagline of rwekit (Real World Evidence kit) is that it contains tools for real world evidence reporting and beyond (aka any field that reports univariate statistics and modeling summaries).
+The tagline for rwekit (Real World Evidence kit) is "tools to support reporting for real world evidence studies and beyond" (because very little, if anything, about these tools for reporting univariate statistics and model summaries is restricted to clinical research).
 
 It will be obvious to many in this space that rwekit is therefore a package that reinvents many existing and better wheels that offer greater functionality for statistical reporting and return a more polished out-of-the-box product (tips hat to broom, gtsummary, Table1). Hindsight is always 20/20 looking back earlier career to the software one could have adopted more easily than writing anew pending a deadline, but there are still times where this code is useful in analytical workflows, and is shared on that merit.
 
-This vignette will cover the specific tasks that rwekit supports within workflows for clinical evidence analysis, and is generally written with an earlier-career data scientist audience in mind, but is not intended to be an exhaustive template for a complete analysis. The emphasis of the rwekit package functionality is on reporting, which assumes a polished input derived from critically evaluated data and carefully developed models. Topics include data pre-processing, cohort description, bivariate effect size, and reporting models in tables and figures.
+This vignette will cover the specific tasks that rwekit supports within workflows for clinical evidence analysis, and is generally written with an earlier-career data analyst audience in mind, but is not intended to be an exhaustive template for a complete analysis. The emphasis of the rwekit package functionality is on reporting, but these tools may also be useful for exploring datasets at earlier stages of analysis. This vignette will cover data pre-processing, cohort description/univariate statistics, bivariate effect size, and reporting modeling summaries.
 
 ## Sample data
 
@@ -48,9 +49,9 @@ sample_data = as.data.frame(patient_id) %>%
 ```
 
 
-# Setting data types with set_coltype_byname()
+# Setting column data types with set_coltype_byname()
 
-Failure to evaluate column types is always a bad idea with tremendous error (and regret) potential, but can be a great temptation given the luxury of having been provisioned a high-quality analytic-ready dataset (dreams do come true). Setting data types is only part of a complete pre-processing routine, but particularly if the data is built upon a well-designed data model, as encountered in the RWE space, this function can be used to leverage naming conventions to simplify this task. 
+Setting the column data types is only part of a complete pre-processing routine, but particularly if your dataset is built upon a well-designed common data model, this function can be used to leverage naming conventions to simplify this task. 
 
 ```{r}
 # generating some messy data for proof of concept
@@ -77,40 +78,310 @@ clean_df = set_coltype_byname(messy_df,
 # good to go
 dplyr::glimpse(clean_df)
 ```
+Notice also that "NULL" values have been converted to NA.
+
+
 # Cohort description with report_characteristics()
 
-Cohort description is a keystone of a clinical manuscript but also because much work in the RWE space is hypothesis-generating, is an inherent part of data exploration. Reporting characteristics with the rwekit package can be as simple as the output provided by providing only the dataset.
+Cohort description is a keystone of a clinical manuscript but also because much work in the RWE space is hypothesis-generating, these basic analyses are an inherent part of data exploration. rwekit::report_characteristics() makes it easy to quickly generate univariate summaries of a dataset, with an option to group by a variable of interest to expedite the exploration of (non-statistical) comparisons. These outputs can also be somewhat customized, which is the primary objective of this section as we go about refining the output for the analysis of `sample_data`.
 
-When columns aren't specified by the cat.cols and num.cols arguments, all columns in the are reported according to the datatype. This is a simple first pass for exploratory purposes, but is likely too much information for reporting ones.
+Reporting characteristics with the rwekit package can be as simple as supplying a dataframe. As shown in the output below, using the function "out-of-the-box" like this will result in reporting of all columns according to the column data type with frequency distributions reported for categorical or factor variables, and the default summary statistics (frequency distribution and mean/standard deviation) reported for numeric variables. The levels of a categorical/factor variable are concatenated to the variable name.
+
 
 ```{r}
 report_characteristics(sample_data)
 ```
 
-## Categorical variable formatting options 
+The output above shows a reasonably good starting point, but there are clearly some issues: variables without real-world meaning should not be reported (patient_id), and the outcome_flag was reported as a numeric variable when its true data type is known to be factor. Some time spent curating the input dataframes could have avoided both of these scenarios, but  `report_characteristics()` has arguments to deal with these common issues.
 
-Now columns of interest are specified directly in the output below. The col.exclude.levels argument has been set with each level of categorical variables desired to exclude from the output. 
+
+## Specify variable output
+
+Variables selected for inclusion in the summary output can be specified directly as vectors containing column names to the arguments cat.cols and num.cols. In the output below, outcome_flag is correctly reported as a frequency distribution, while patient_id has been dropped altogether.
+
+```{r}
+report_characteristics(sample_data,
+                      cat.cols = c("cat_var","binary_var", "outcome_flag"),
+                      num.cols = c("numeric_var1", "numeric_var2"))
+
+
+```
+
+
+## Group output by column
+
+Now group the summary by `outcome_flag` using the group argument. By default, the statistics for the total cohort are included as the first statistics column of the output, but can be removed by setting the argument total.column = FALSE.
 
 ```{r}
 report_characteristics(sample_data,
                       cat.cols = c("cat_var","binary_var"),
-                      col.exclude.levels = c(0,NA))
+                      num.cols = c("numeric_var1", "numeric_var2"),
+                      group = "outcome_flag")
 
-
-# write.csv(table1, "table1.csv")
 ```
+
+## Choose variable levels to report 
+
+In the previous grouped output, both levels of binary_var are reported. If reporting only the positive class (binary_var==1) is appropriate, the negative class can be excluded with the col.exclude.levels argument, which accepts a vector of strings or numerals to be excluded from the summary. In the output below, col.exclude.levels is set to c(0).
 
 ```{r}
 report_characteristics(sample_data,
-                      num.cols = c("numeric_var1","numeric_var2"),
-                      return.summaries = c("count_percent", "mean_sd", "median_iqr")
-)
+                      cat.cols = c("cat_var","binary_var"),
+                      num.cols = c("numeric_var1", "numeric_var2"),
+                      group = "outcome_flag",
+                      col.exclude.levels = c(0)
+                      )
+```
 
+Similarly, the desired levels of the grouping variable can be selected with the group.exclude.levels argument. Level 0 is excluded in the output below, and the total column is removed so that the summary is reported only for patients with the positive class for outcome_flag.
+
+```{r}
+report_characteristics(sample_data,
+                      cat.cols = c("cat_var","binary_var"),
+                      num.cols = c("numeric_var1", "numeric_var2"),
+                      group = "outcome_flag",
+                      col.exclude.levels = c(0),
+                      group.exclude.levels = "0",
+                      total.column = FALSE
+                      )
+```
+
+
+## Customize numeric summaries
+
+The output is looking better, but there are still improvements that could be made: numeric_var1 is skewed, so mean and standard deviation are likely not the best choice for summary measures. The return.summaries argument supports four formatted summary statistics, but by default, c("count_percent", "mean_sd") are used:  
+
+- count_percent returns a frequency distribution describing the number of non-missing values in a column
+- mean_sd returns the mean (standard deviation) 
+- median_iqr returns the median (1st quartile, 3rd quartile)
+- median_minmax returns the median (minimum, maximum)
+
+
+In the output below, "median_iqr" has been added to return.summaries. The cat.cols argument has been commented out for now, to focus on reporting of the numeric columns.
+
+```{r}
+report_characteristics(sample_data,
+                       #cat.cols = c("cat_var", "binary_var"),
+                      num.cols = c("numeric_var1", "numeric_var2"),
+                      group = "outcome_flag",
+                      col.exclude.levels = c(0),
+                      return.summaries = c("count_percent", "mean_sd", "median_iqr")
+                      )
+```
+
+The mean and standard deviation summary can be removed with return.summaries.bycol. 
+This argument accepts a list of length return.summaries. Each list element should contain a boolean vector of length num.cols, with TRUE describing if the respective return summary should be reported. 
+
+Below, return.summaries.bycol is formatted such that count_percent is reported for both variables, mean_sd is reported for numeric_var2, and median_iqr is reported for numeric_var1. Note that the return.summaries.bycol list honors the order of return.summaries as specified.
+
+```{r}
+report_characteristics(sample_data,
+                       #cat.cols = c("cat_var","binary_var"),
+                      num.cols = c("numeric_var1", "numeric_var2"),
+                      group = "outcome_flag",
+                      col.exclude.levels = c(0),
+                      return.summaries = c("count_percent", "mean_sd", "median_iqr"),
+                      return.summaries.bycol = list(c(TRUE, TRUE), # count_percent
+                                                    c(FALSE, TRUE), # mean_sd
+                                                    c(TRUE, FALSE)) # median_iqr
+                      )
+```
+
+## Rounding
+
+The round.places argument controls how aggregate statistics (mean_sd, median_iqr, median_minmax) are rounded. By default, outputs are rounded to the tens place (round.places=1). If the outputs for all numeric columns should be rounded to the same place, the input to round.places can be a single integer. Otherwise, round.places accepts a vector of integers of length num.cols with the desired number of places after the decimal point to be included for each numeric statistical summary outputs associated with that column. 
+
+In the output below, numeric_var1 is rounded to a whole number, and numeric_var2 is rounded to two decimal places.
+
+```{r}
+report_characteristics(sample_data,
+                       #cat.cols = c("cat_var","binary_var"),
+                      num.cols = c("numeric_var1", "numeric_var2"),
+                      group = "outcome_flag",
+                      col.exclude.levels = c(0),
+                      round.places = c(0,2),
+                      return.summaries = c("count_percent", "mean_sd", "median_iqr"),
+                      return.summaries.bycol = list(c(TRUE, TRUE), # count_percent
+                                                    c(FALSE, TRUE), # mean_sd
+                                                    c(TRUE, FALSE)) # median_iqr
+                      )
+```
+
+The round.percent argument controls the rounding of percents reported for count_percent outputs. Only a single integer is accepted, with default set to 0 to report percents as whole numbers. In the output below, round.percent is changed from the default to 1. This includes the reporting of cat.cols, which have been added back to the output.
+
+```{r}
+report_characteristics(sample_data,
+                      cat.cols = c("binary_var","cat_var"),
+                      num.cols = c("numeric_var1", "numeric_var2"),
+                      group = "outcome_flag",
+                      col.exclude.levels = c(0),
+                      round.percent = 1,
+                      round.places = c(0,2),
+                      return.summaries = c("count_percent", "mean_sd", "median_iqr"),
+                      return.summaries.bycol = list(c(TRUE, TRUE), # count_percent
+                                                    c(FALSE, TRUE), # mean_sd
+                                                    c(TRUE, FALSE)) # median_iqr
+                      )
+```
+
+## Extract raw values
+
+Setting format=FALSE will return a list of the unformatted summary statistics for cat.cols and num.cols.
+
+```{r}
+report_characteristics(sample_data,
+                      cat.cols = c("binary_var","cat_var"),
+                      num.cols = c("numeric_var1", "numeric_var2"),
+                      group = "outcome_flag",
+                      format = FALSE,
+                      col.exclude.levels = c(0),
+                      round.percent = 1,
+                      round.places = c(0,2),
+                      return.summaries = c("count_percent", "mean_sd", "median_iqr"),
+                      return.summaries.bycol = list(c(TRUE, TRUE), # count_percent
+                                                    c(FALSE, TRUE), # mean_sd
+                                                    c(TRUE, FALSE)) # median_iqr
+                      )
 ```
 
 
 # Bivariate effect size with report_unadjusted()
 
+This function was developed to ease the calculation and reporting of model-based bivariate effect size and has applications in adjusted model development and reporting, as many manuscript reporting checklists recommend including unadjusted estimates for all models.  
+
+Referencing again the emphasis on RWE studies for this package, there are three models currently defined for this function which are supplied to the model argument: 
+-glm_gaussian; will perform linear regression using the glm() procedure
+-glm_binomial; will perform logistic regression using the glm() procedure the family="binomial"
+-survival_coxph; will perform Cox-proportional hazards regression using the survival package
+
+The outcome.var argument takes the dependent variable, where as the candidate predictors are supplied to the model.vars argument as a vector.
+
+Simple logistic regression for three variables in `sample_data` predicting "outcome_flag" is output below.
+
+```{r}
+report_unadjusted(sample_data,
+                  model = "glm_binomial",
+                  outcome.var = "outcome_flag",
+                  model.vars = c("cat_var", "binary_var", "numeric_var1")
+                  )
+```
+
+For Cox proportional hazards models, the time.var argument should also be supplied.
+
+```{r}
+report_unadjusted(sample_data,
+                  model = "survival_coxph",
+                  outcome.var = "outcome_flag",
+                  time.var = "numeric_var1",
+                  dependent.vars = c("cat_var", "binary_var", "numeric_var2")
+                  )
+```
+
+
 # Report modeling summaries with report_model()
 
-## Formatting with the forestplot package
+The report_model() function acts on top of broom::tidy().
+
+Consider a simple survival model developed for `sample_data`.
+
+```{r}
+surv_mod = survival::coxph(survival::Surv(event = outcome_flag, time = numeric_var1) ~ binary_var + cat_var + numeric_var2, data = sample_data)
+```
+
+The only obligatory argument to report_model is a model object. The output is similar to the default output to the broom::tidy() function with exponentiated estimates and 95% confidence intervals (because it is), with a formatted column for the estimate and confidence interval, and also a rounded p-value (see documentation for rwekit::format_pvalues()).
+
+```{r}
+report_model(surv_mod)
+```
+
+## Add custom labels to model output
+
+The output above can be further refined with the addition of labels. Labels must be supplied as a dataframe with two columns: the first should contain the model terms, formatted exactly as they appear in the model output (see the term column in the output above), the second should contain the desired labels, ordered as in column 1. 
+
+The output will be ordered according to how the labels are ordered in this dataframe, which makes it easy to reformat a modeling output without having to reorder terms in the model itself.
+
+`mod_labels` has been created to label the `surv_mod` object below. For your own workflows, checking that the labels dataframe matches to the correct model terms at this stage is strongly encouraged.
+
+```{r}
+mod_labels = data.frame(vars = c( "cat_varB", "cat_varC", "binary_var1", "numeric_var2"),
+                labs = c("Categorical variable B (Reference A)", "Categorical variable C (Reference A)","Binary variable (Reference negative class)","Uniform continuous variable"))
+
+
+report_model(surv_mod, variable.labels = mod_labels)
+```
+
+## Add outcome frequency for binary outcomes
+
+If the model contains a binary outcome, the frequency distribution for the number of outcomes for each level of a categorical or factor variable in the model is reported by specifying the outcome argument, and the model data d. The positive class of the outcome variable must be 1, and the negative class must be 0.
+
+Important: If your model excludes observations because of missingness, then supplying the original dataset to the d argument will give incorrect values. The correct approach would be to ensure that the input data exactly reflects the modeled population.
+
+If only a dataframe is provided, the modeling variables for frequency reporting will be determined by the column types (numeric variables are reported as "-"), as shown below:
+
+```{r}
+report_model(surv_mod, 
+             variable.labels = mod_labels,
+             outcome.var = "outcome_flag",
+             d = sample_data)
+```
+
+Alternatively, modeling variables that are factors to be reported for the outcome frequency distribution can be specified in the factor.vars argument.
+
+```{r}
+report_model(surv_mod, 
+             variable.labels = mod_labels,
+             outcome.var = "outcome_flag",
+             d = sample_data,
+             factor.vars = c("binary_var", "cat_var"))
+```
+
+
+The percent can also be added to this reporting, by setting the ratio.include.percent argument to TRUE.
+The reported decimal places in the percent are controlled by the round.percent argument, which defaults to 0, but has been changed to 1 in the output below.
+
+```{r}
+report_model(surv_mod, 
+             variable.labels = mod_labels,
+             outcome.var = "outcome_flag",
+             d = sample_data,
+             ratio.include.percent = TRUE,
+             round.percent = 1)
+```
+
+## Option to report inverse estimates
+
+The inverse of an estimate will be reported if the model term is supplied to the report.inverse argument, which accepts a vector of model terms. 
+
+Users are strongly encouraged to double check supplied labels to ensure that the interpretation is correct. For factors with more than two levels, advise to refit the model object. When verbose is set to TRUE, a warning reminder of this will be thrown any time the report.inverse argument is not NULL.
+
+Below, the binary variable is reported with the positive class as the reference, instead of the negative class.
+Note that the frequency distributions have been flipped accordingly, compared to the previous output.
+
+```{r}
+
+inv_mod_labels = data.frame(vars = c( "cat_varB", "cat_varC", "binary_var1", "numeric_var2"),
+                labs = c("Categorical variable B (Reference A)", "Categorical variable C (Reference A)","Binary variable (Reference positive class)","Uniform continuous variable"))
+
+report_model(surv_mod, 
+             variable.labels = inv_mod_labels,
+             outcome.var = "outcome_flag",
+             d = sample_data,
+             ratio.include.percent = TRUE,
+             round.percent = 1,
+             report.inverse = "binary_var1")
+```
+
+The complete output of the tidy model object is included for the user's reference, but it can be easily cleaned up for reporting purposes:
+
+
+```{r}
+report_model(surv_mod, 
+             variable.labels = inv_mod_labels,
+             outcome.var = "outcome_flag",
+             d = sample_data,
+             ratio.include.percent = TRUE,
+             round.percent = 1,
+             report.inverse = "binary_var1") %>%
+  dplyr::select(variable_labels, outcome_freq_comparison, outcome_freq_reference, estimate_CI, p_round)
+```
+
