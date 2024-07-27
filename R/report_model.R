@@ -1,6 +1,7 @@
 report_model = function(x,
                         outcome.var=NULL,
                         d=NULL,
+                        factor.vars = NULL,
                         variable.labels=NULL,
                         report.inverse=NULL,
                         round.percent=0,
@@ -23,13 +24,19 @@ if (!is.null(outcome.var)) {
     stringr::str_subset(".+") %>%
     trimws()
   # unless specified, data type is identified from the input dataframe
-  d_fc_vars <- d %>% dplyr::select_if(function(x) is.character(x) | is.factor(x)) %>% colnames()
-  mod_fc_vars <- mod_vars[mod_vars %in% d_fc_vars]
-  fc_vars_minlevels <- lapply(mod_fc_vars, function(x) {d %>% dplyr::select(x) %>% unique() %>% dplyr::pull() %>% as.character() %>% min(na.rm=TRUE)})
+
+  if (is.null(factor.vars)) {
+
+    d_fc_vars <- d %>% dplyr::select_if(function(x) is.character(x) | is.factor(x)) %>% colnames()
+    factor.vars <- mod_vars[mod_vars %in% d_fc_vars]
+
+  }
+
+  fc_vars_minlevels <- lapply(factor.vars, function(x) {d %>% dplyr::select(x) %>% unique() %>% dplyr::pull() %>% as.character() %>% min(na.rm=TRUE)})
 
   # step 3 apply to report frequency
 
-  ratio_df <- purrr::map2(mod_fc_vars,fc_vars_minlevels, function(x,y) report_frequency(d,
+  ratio_df <- purrr::map2(factor.vars,fc_vars_minlevels, function(x,y) report_frequency(d,
                                                                                        cols=outcome.var,
                                                                                        group=x,
                                                                                        format=FALSE,
