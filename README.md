@@ -5,7 +5,7 @@
  <img src="man/figures/logo.png" align="right" height="139" alt="" />
 <!-- badges: end -->
 
-rwekit contain simple tools to support reporting for real world evidence studies and beyond
+rwekit contains simple tools to support reporting for real world evidence studies and beyond
 
 ## Installation
 

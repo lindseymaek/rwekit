@@ -1,13 +1,19 @@
-#' Round and format p-values
+#' Report rounded p-values
 #'
-#' Converts numeric p-values to rounded and formatted characters according to common rounding conventions.
+#' Rounds and formats numeric p-values to common rounding conventions
 #'
 #' @param x numeric p-value input
 #' @param method integer corresponding to desired rounding convention. See Details.
 #' @param lead.zero if FALSE, no 0 will be reported in the place before the decimal. Defaults to TRUE.
 #'
 #' @return a character formatted per the specified method
-
+#'
+#'
+#' @details
+#' Two methods are currently defined. Select 1 (default) to round values above 0.10 to two digits. Select 2 to round values above 0.10 to 1 digit.
+#' APA format is equivalent to method=1 when lead.zero=FALSE.
+#'
+#' @noRd
 
 
 format_pvalues <- function(x,

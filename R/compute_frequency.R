@@ -1,31 +1,18 @@
 #' Calculate frequency distributions
 #'
-#' Returns a dataframe with columns of frequency, percent, and ratio
+#' Returns univariate categorical summary statistics for a vector
 #'
 #' @param x a vector
 #' @param group optional column to stratify frequency counts by
 #' @param round.percent integer count of places to include in percentage
-#' @param group.exclude.levels optional vector with levels of group to exclude
 #'
-#' @return a dataframe with the levels of stratified
+#' @return a dataframe with the count, percent, and ratio for each level of x
 #'
-#' @examples
-#' \dontrun{
-#' # create some mock patient data
-#' size = 2500
-#' unif1 = runif(size)
-#' unif2 = runif(size)
-#' patient_id = sample(1:1000000,size)
-#' mock_data = as.data.frame(patient_id) %>%
-#'   dplyr::mutate(binary_var1 = ifelse(unif1<0.8,1,0),
-#'                 rare_event =ifelse(unif2>0.95,1,0))
-#' # get distribution of rare_event in the entire dataset
-#' compute_frequency(mock_data$rare_event)
-#' # get distribution of rare_event stratified by binary_var1
-#' compute_frequency(mock_data$rare_event, mock_data$rare_event,group.display.levels = c(1))
-#' }
+#' @noRd
 #'
-compute_frequency <- function(x, group=NULL, round.percent=0) {
+compute_frequency <- function(x,
+                              group = NULL,
+                              round.percent=0) {
   name_count <- names(x)
   if (!is.null(group)) {
 

@@ -1,15 +1,14 @@
-#' Calculate numeric univariate summary statistics
+#' Calculate univariate numeric summary statistics
 #'
-#' The following univariate summary statistics are reported for a numeric vector:
-#' mean, standard deviation, minimum, maximum,
-#' median, 25th percentile, 75th percentile, percent and count of all missing and non-missing values,
-#'  Missing values are removed for calculation of summary statistics
+#' Returns measures of center, spread, range, and missingness for a vector
 #'
 #' @param x a numeric vector
 #' @param group optional character string indicating the column to stratify by for summary statistics
 #' @param round.places integer count of places to include for each summary statistic
 #'
-#' @return a dataframe with columns corresponding to each summary statistic and row-wise observations for each level of the group variable, if applicable
+#' @return a dataframe with columns corresponding to each summary statistic and row-wise observations for each level of the group variable, if provided
+#'
+#' @noRd
 #'
 compute_numuniv = function(x,
                            group=NULL,
