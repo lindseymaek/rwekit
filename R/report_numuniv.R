@@ -76,7 +76,7 @@ report_numuniv <- function(d,
         }
 
         list_summary[[i]] <- rm_summary %>%
-          tidyr::pivot_wider(names_from = "group_levels", values_from = return.summaries[i], names_prefix="group_levels")
+          tidyr::pivot_wider(names_from = "group_levels", values_from = return.summaries[i], names_prefix=group)
       }
 
     } else {

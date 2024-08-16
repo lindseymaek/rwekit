@@ -51,7 +51,7 @@ report_frequency = function(d,
       df_format <- df_format %>%
         dplyr::select(var_name, measure_name,group_levels, count_percent) %>%
         dplyr::filter(!group_levels %in% group.exclude.levels) %>%
-        tidyr::pivot_wider(names_from = "group_levels", values_from = "count_percent", names_prefix="group_levels")
+        tidyr::pivot_wider(names_from = "group_levels", values_from = "count_percent", names_prefix=group)
 
     } else {
 
