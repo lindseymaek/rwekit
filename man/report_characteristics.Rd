@@ -6,94 +6,89 @@
 \usage{
 report_characteristics(
   d,
-  cat.cols,
-  num.cols,
-  cols = NULL,
+  cat.cols = NULL,
+  num.cols = NULL,
   group = NULL,
   round.places = 1,
   round.percent = 0,
   format = TRUE,
+  total.column = TRUE,
   group.exclude.levels = NULL,
   col.exclude.levels = NULL,
-  return.summaries = c("count_percent", "mean_sd", "median_iqr", "median_minmax"),
+  return.summaries = c("count_percent", "mean_sd"),
   return.summaries.bycol = NULL
 )
 }
 \arguments{
-\item{d}{a dataframe}
+\item{d}{A dataframe}
 
-\item{cat.cols}{a vector of column names for which to report frequency distributions.}
+\item{cat.cols}{Vector of column names for which to report frequency distributions.}
 
-\item{num.cols}{a vector of column names for which to report summary statistics.}
+\item{num.cols}{Vector of column names for which to report summary statistics.}
 
-\item{cols}{a vector of column names from which frequency distributions or summary statistics will be calculated based on data type. This is an alternative column input that is utilized only if cat.cols or num.cols is NULL}
+\item{group}{Optional column name to stratify by}
 
-\item{group}{optional column name to stratify by}
+\item{round.places}{Integer count of decimal places to include in summary statistic reporting, or an integer vector of length(cols) with the count of decimal places to be reported for each corresponding col}
 
-\item{round.places}{a single integer count of decimal places to include in summary statistic reporting, or an integer vector of length(cols) with the count of decimal places to be reported for each corresponding col}
+\item{round.percent}{Integer count of decimal places to include in percentage reporting}
 
-\item{round.percent}{integer count of decimal places to include in percentage reporting}
+\item{format}{Boolean: if TRUE (default) then a formatted character column is generated with both the count and percentage concatenated as: "count (percentage)"}
 
-\item{format}{if TRUE (default) then a formatted character column is generated with both the count and percentage concatenated as: "count (percentage)"}
+\item{total.column}{Boolean: if TRUE, then statistics are reported for the total dataset in addition to the levels of group}
 
-\item{group.exclude.levels}{optional vector with levels of group to exclude from report}
+\item{group.exclude.levels}{Vector with optional levels of group to exclude from report}
 
-\item{col.exclude.levels}{optional vector with levels of variables in cols to exclude from report}
+\item{col.exclude.levels}{Vector with optional levels of variables in cols to exclude from report}
 
-\item{return.summaries}{a vector of formatted summary statistics: "count_percent", "mean_sd", "median_iqr", "median_minmax". All included by default.}
+\item{return.summaries}{Vector of formatted summary statistics: "count_percent", "mean_sd", "median_iqr", "median_minmax". All included by default.}
 
-\item{return.summaries.bycol}{a list of length(return.summaries) containing a boolean vectors of length(num.cols). If TRUE, the corresponding return.summaries value will be returned for the specified column.}
+\item{return.summaries.bycol}{List of length(return.summaries) containing a boolean vectors of length(num.cols). If TRUE, the return.summaries value that corresponds to the position in the return.summaries list will be returned for the column that corresponds to the position in cols.}
+
+\item{cols}{Vector of column names from which frequency distributions or summary statistics will be calculated based on data type. This is an alternative column input that is utilized only if cat.cols or num.cols is NULL}
 }
 \value{
 If format is set to TRUE, a dataframe is returned with the summary statistics for all categorical and numeric columns. If format is set to FALSE, a list of the raw
 summary outputs will be returned for categorical and numeric columns separately.
 }
 \description{
-Population characteristics from an input dataframe are summarized according to data type:
+Population characteristics are summarized according to data type:
 frequency distributions are reported for factor or categorical variables and measures of center and spread are reported for numeric variables.
-Options to stratify analysis and format reported statistics.
+Options to stratify analysis by subgroup and tune reported statistics by input.
 }
 \details{
-## Cols
+# cols
 
 The computation of summary statistics prioritizes the columns identified in the cat.cols and num.cols arguments, which allow the user to directly
 specify which features should be summarized for frequency distributions and summary statistics, respectively. Alternatively, if the cols argument is supplied and num.cols
 or cat.cols are NULL, then the datatype of cols will be used to identify which should be summarized for frequency distributions (factor or character type) and
 for summary statistics (numeric type).
-
-## Return summaries by column
-
-This gives the user the option to fine-tune which summary statistics are reported for each variable. A list with
 }
 \examples{
 \dontrun{
-# some mock patient data
-mock_data = as.data.frame(patient_id) \%>\%
- dplyr::mutate(cat_var1 = dplyr::case_when(unif2<0.4 ~ "A",
-                                           unif2>=0.4 & unif2<0.6 ~ "B",
-                                           unif2>=0.6& unif2<0.8 ~ "C",
-                                           unif2>=0.8 ~ "D"),
-              chisq_var = round(rchisq(size,5)),
-              norm_var = abs(round(10*rnorm(size, mean = 5.5, sd = 1.1),1)),
-              exp_var = round(rexp(size)),
-              binary_var1 = factor(ifelse(unif1<0.8,1,0)),
-              binary_var2 = factor(ifelse(unif1<0.4,1,0)),
-              rare_event =ifelse(unif2>0.95,1,0))
+# generate some random data for a made-up patient cohort
+size = 2500
+patient_id = sample(1:1000000,size)
+sample_data = as.data.frame(patient_id) \%>\%
+dplyr::mutate(outcome_flag = rbinom(size, 1, prob = c(0.1)),
+                binary_var = factor(rbinom(size,1,prob=c(0.7))),
+                numeric_var1=round(rchisq(size,5)),
+                numeric_var2=runif(size),
+                cat_var=factor(rbinom(size,3,prob=c(0.5)))) \%>\%
+  dplyr::mutate(numeric_var1 = ifelse(outcome_flag==0, numeric_var1*numeric_var2,numeric_var1),
+                cat_var = dplyr::case_when(cat_var==0~"A",
+                                           cat_var==1~"B",
+                                           cat_var==2~"C",
+                                           TRUE ~ "D"))
 
-# summarize exp_var and norm_var for all patients
-report_characteristics(mock_data,
-                        cols = c("exp_var", "norm_var"),
-                        round.places = c(1),
-                        format = TRUE)
+# summarize sample_data
+report_characteristics(sample_data)
 
  # access complete summary with format=FALSE
-report_characteristics(mock_data,
-                        cols = c("exp_var", "norm_var"),
-                        round.places = c(1),
+report_characteristics(some_data,
                         format = FALSE)
 
  # group by cat_var1 and report mean_sd for norm_var and median_iqr for exp_var
-report_characteristics(mock_data,
+report_characteristics(some_data,
                         cols = c("exp_var", "norm_var", "binary_var1"),
                         round.places = c(1),
                         format = TRUE,

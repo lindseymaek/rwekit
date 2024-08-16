@@ -15,19 +15,19 @@ set_coltype_byname(
 )
 }
 \arguments{
-\item{d}{a dataframe}
+\item{d}{A dataframe}
 
-\item{trim.names}{vector of strings to be trimmed from column names in dataframe}
+\item{trim.names}{Vector of strings to be trimmed from column names in dataframe}
 
-\item{factor.features}{vector of strings matched to columns converted to type factor}
+\item{factor.features}{Vector of strings matched to columns converted to type factor}
 
-\item{character.features}{vector of strings matched to columns converted to type character}
+\item{character.features}{Vector of strings matched to columns converted to type character}
 
-\item{numeric.features}{vector of strings matched to columns converted to type numeric}
+\item{numeric.features}{Vector of strings matched to columns converted to type numeric}
 
-\item{date.features}{vector of strings matched to columns converted to type date}
+\item{date.features}{Vector of strings matched to columns converted to type date}
 
-\item{date.format}{string containing the format of the input date to be supplied to as.Date}
+\item{date.format}{String containing the format of the input date to be supplied to as.Date}
 }
 \value{
 a dataframe with column data types set as specified

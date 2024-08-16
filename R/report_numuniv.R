@@ -18,7 +18,7 @@
 #'
 #' The following defaults currently apply: NA values are removed from all summary statistic calculations. The argument type for the quantiles() is set to 2.
 #'
-#' #' @noRd
+#' @noRd
 
 
 report_numuniv <- function(d,

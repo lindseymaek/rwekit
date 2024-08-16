@@ -2,13 +2,13 @@
 #'
 #' Converts columns to factor, character, numeric, or date type by matching user-specified strings to target column names.
 #'
-#' @param d a dataframe
-#' @param trim.names vector of strings to be trimmed from column names in dataframe
-#' @param factor.features vector of strings matched to columns converted to type factor
-#' @param character.features vector of strings matched to columns converted to type character
-#' @param numeric.features vector of strings matched to columns converted to type numeric
-#' @param date.features vector of strings matched to columns converted to type date
-#' @param date.format string containing the format of the input date to be supplied to as.Date
+#' @param d A dataframe
+#' @param trim.names Vector of strings to be trimmed from column names in dataframe
+#' @param factor.features Vector of strings matched to columns converted to type factor
+#' @param character.features Vector of strings matched to columns converted to type character
+#' @param numeric.features Vector of strings matched to columns converted to type numeric
+#' @param date.features Vector of strings matched to columns converted to type date
+#' @param date.format String containing the format of the input date to be supplied to as.Date
 #'
 #' @return a dataframe with column data types set as specified
 #' @export
