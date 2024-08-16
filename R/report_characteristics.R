@@ -86,7 +86,16 @@ report_characteristics <- function(d,
       cat.cols <- d %>% dplyr::select_if(function(x) is.character(x) | is.factor(x)) %>% colnames()
       num.cols <- d %>% dplyr::select_if(is.numeric) %>% colnames()
 
+      if (length(cat.cols)==0) {
+        cat.cols <- NULL
+      }
+
+      if (length(num.cols)==0) {
+        num.cols <- NULL
+      }
+
   }
+
 
   if (!is.null(cat.cols)) {
     df_summary_cat <- report_frequency(d,
@@ -126,6 +135,7 @@ report_characteristics <- function(d,
   }
 
    if (!is.null(num.cols)) {
+
     df_summary_num <- report_numuniv(d,
                                     cols=num.cols,
                                     group,

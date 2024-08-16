@@ -64,7 +64,7 @@ messy_df = data.frame(to_num_col = c("1" ,"2" , "NULL", "5"),
 glimpse(messy_df)
 ```
 
-Use the trim.names argument to remove "_col" from the column names because it doesn't provide any additional information and is going to get old to type again and again. Then we'll use unique strings that will identify the columns to be converted to each data type with the "features" arguments. While this has been made obvious in this purpose-built example, use caution in setting these arguments to avoid unspecific strings that provide unexpected results and verify results before proceeding.
+Use the trim.names argument to remove "_col" from the column names because it doesn't provide any additional information and is going to get old to type again and again. Then use unique strings that will identify the columns to be converted to each data type with the "features" arguments. While this has been made obvious in this purpose-built example, use caution in setting these arguments to avoid unspecific strings that provide unexpected results and verify results before proceeding.
 
 ```{r}
 clean_df = set_coltype_byname(messy_df,
@@ -83,10 +83,9 @@ Notice also that "NULL" values have been converted to NA.
 
 # Cohort description with report_characteristics()
 
-Cohort description is a keystone of a clinical manuscript but also because much work in the RWE space is hypothesis-generating, these basic analyses are an inherent part of data exploration. rwekit::report_characteristics() makes it easy to quickly generate univariate summaries of a dataset, with an option to group by a variable of interest to expedite the exploration of (non-statistical) comparisons. These outputs can also be somewhat customized, which is the primary objective of this section as we go about refining the output for the analysis of `sample_data`.
+Cohort description is a keystone of a clinical manuscript but also because much work in the RWE space is hypothesis-generating, these basic analyses are an inherent part of data exploration. rwekit::report_characteristics() makes it easy to quickly generate univariate summaries of a dataset, with an option to group by a variable of interest to expedite the exploration of (non-statistical) comparisons. These outputs can also be somewhat customized, which is the primary objective of this section as the output for the analysis of `sample_data` is progressively refined.
 
 Reporting characteristics with the rwekit package can be as simple as supplying a dataframe. As shown in the output below, using the function "out-of-the-box" like this will result in reporting of all columns according to the column data type with frequency distributions reported for categorical or factor variables, and the default summary statistics (frequency distribution and mean/standard deviation) reported for numeric variables. The levels of a categorical/factor variable are concatenated to the variable name.
-
 
 ```{r}
 report_characteristics(sample_data)
@@ -149,7 +148,7 @@ report_characteristics(sample_data,
 
 ## Customize numeric summaries
 
-The output is looking better, but there are still improvements that could be made: numeric_var1 is skewed, so mean and standard deviation are likely not the best choice for summary measures. The return.summaries argument supports four formatted summary statistics, but by default, c("count_percent", "mean_sd") are used:  
+The output is looking better, but there are still improvements that could be made: numeric_var1 is skewed, so mean and standard deviation are likely not the best choice of summary measures. The return.summaries argument supports four formatted summary statistics, but by default, c("count_percent", "mean_sd") are used:  
 
 - count_percent returns a frequency distribution describing the number of non-missing values in a column
 - mean_sd returns the mean (standard deviation) 
