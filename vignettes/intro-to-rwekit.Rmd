@@ -270,13 +270,30 @@ For Cox proportional hazards models, the time.var argument should also be suppli
 
 ```{r}
 report_unadjusted(sample_data,
-                  model = "survival_coxph",
+                  model.method = "survival_coxph",
                   outcome.var = "outcome_flag",
                   time.var = "numeric_var1",
-                  dependent.vars = c("cat_var", "binary_var", "numeric_var2")
+                  model.vars = c("cat_var", "binary_var", "numeric_var2")
                   )
 ```
 
+## Option to report inverse estimates
+
+The inverse of an estimate will be reported if the model term is supplied to the report.inverse argument, which accepts a vector of model terms. 
+
+Users are warned that the reported levels of the output terms are not changed to reflect the new reported levels of variables for which the inverse is reported. When verbose is set to TRUE, a warning reminder of this will be thrown any time the report.inverse argument is not NULL.
+
+Below, the binary variable is reported with the positive class as the reference, instead of the negative class.
+
+```{r}
+report_unadjusted(sample_data,
+                  model.method = "survival_coxph",
+                  outcome.var = "outcome_flag",
+                  time.var = "numeric_var1",
+                  model.vars = c("cat_var", "binary_var", "numeric_var2"),
+                  report.inverse = "binary_var1"
+                  )
+```
 
 # Report modeling summaries with report_model()
 

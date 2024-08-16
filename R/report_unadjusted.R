@@ -28,9 +28,11 @@ report_unadjusted <- function(d,
                               outcome.var,
                               time.var,
                               model.vars,
+                              report.inverse = NULL,
                               round.estimate = 2,
-                              p.round.method=1,
-                              p.lead.zero=TRUE,
+                              p.round.method = 1,
+                              p.lead.zero = TRUE,
+                              verbose = TRUE,
                               ...
                               ) {
 
@@ -60,9 +62,27 @@ report_unadjusted <- function(d,
     print("Supported model.method arguments include glm_binomial, glm_gaussian, and survival_coxph")
   }
 
-  unadj.out = unadj.out %>%
+  unadj.out <- unadj.out %>%
     dplyr::rename("conf_low"="conf.low",
-                  "conf_high"="conf.high") %>%
+                  "conf_high"="conf.high")
+
+  if (!is.null(report.inverse)) {
+    if (verbose==TRUE) {
+
+      warning("report.inverse is not null, terms will not reflect correct levels of the reported inverse values.")
+    }
+
+      unadj.out <- unadj.out %>%
+        dplyr::mutate(estimate.inverse = 1 / estimate,
+                      conf.low.inverse = 1 / conf_high,
+                      conf.high.inverse = 1 / conf_low) %>%
+        dplyr::mutate(estimate = ifelse(term %in% report.inverse, estimate.inverse, estimate),
+                      conf_low = ifelse(term %in% report.inverse, conf.low.inverse, conf_low),
+                      conf_high = ifelse(term %in% report.inverse, conf.high.inverse,conf_high))
+
+    }
+
+  unadj.out <- unadj.out %>%
     dplyr::mutate(p_round = as.character(format_pvalues(p.value,
                                                         method=p.round.method,
                                                         lead.zero=p.lead.zero)),
