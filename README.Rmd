@@ -15,10 +15,12 @@ knitr::opts_chunk$set(
 
 # rwekit
 
+![rwekit logo](https://github.com/lindseymaek/rwekit/blob/main/man/figures/logo.png)
+
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of rwekit is to ...
+Tools for Real World Evidence (RWE) reporting and beyond.
 
 ## Installation
 

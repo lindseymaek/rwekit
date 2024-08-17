@@ -3,10 +3,17 @@
 
 # rwekit
 
+<figure>
+<img
+src="https://github.com/lindseymaek/rwekit/blob/main/man/figures/logo.png"
+alt="rwekit logo" />
+<figcaption aria-hidden="true">rwekit logo</figcaption>
+</figure>
+
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of rwekit is to …
+Tools for Real World Evidence (RWE) reporting and beyond.
 
 ## Installation
 
@@ -68,20 +75,20 @@ Quickly generate Table 1, with several options to customize.
 
 | var_name     | measure_name  | total               | outcome_flag0       | outcome_flag1       |
 |:-------------|:--------------|:--------------------|:--------------------|:--------------------|
-| binary_var0  | count_percent | 762 (30)            | 689 (31)            | 73 (29)             |
-| binary_var1  | count_percent | 1,738 (70)          | 1,560 (69)          | 178 (71)            |
-| cat_varA     | count_percent | 306 (12)            | 271 (12)            | 35 (14)             |
-| cat_varB     | count_percent | 939 (38)            | 853 (38)            | 86 (34)             |
-| cat_varC     | count_percent | 930 (37)            | 838 (37)            | 92 (37)             |
-| cat_varNA    | count_percent | 325 (13)            | 287 (13)            | 38 (15)             |
-| numeric_var1 | count_percent | 2,500 (100)         | 2,249 (100)         | 251 (100)           |
-| numeric_var1 | mean_sd       | 2.8, 2.6            | 2.5, 2.4            | 5.1, 3.0            |
-| numeric_var2 | count_percent | 2,500 (100)         | 2,249 (100)         | 251 (100)           |
+| binary_var0  | count_percent | 728 (29)            | 658 (29)            | 70 (26)             |
+| binary_var1  | count_percent | 1,772 (71)          | 1,577 (71)          | 195 (74)            |
+| cat_varA     | count_percent | 327 (13)            | 289 (13)            | 38 (14)             |
+| cat_varB     | count_percent | 938 (38)            | 845 (38)            | 93 (35)             |
+| cat_varC     | count_percent | 931 (37)            | 829 (37)            | 102 (38)            |
+| cat_varNA    | count_percent | 304 (12)            | 272 (12)            | 32 (12)             |
+| numeric_var1 | count_percent | 2,500 (100)         | 2,235 (100)         | 265 (100)           |
+| numeric_var1 | mean_sd       | 2.8, 2.6            | 2.5, 2.4            | 5.4, 3.3            |
+| numeric_var2 | count_percent | 2,500 (100)         | 2,235 (100)         | 265 (100)           |
 | numeric_var2 | mean_sd       | 0.5, 0.3            | 0.5, 0.3            | 0.5, 0.3            |
-| outcome_flag | count_percent | 2,500 (100)         | 2,249 (100)         | 251 (100)           |
+| outcome_flag | count_percent | 2,500 (100)         | 2,235 (100)         | 265 (100)           |
 | outcome_flag | mean_sd       | 0.1, 0.3            | 0.0, 0.0            | 1.0, 0.0            |
-| patient_id   | count_percent | 2,500 (100)         | 2,249 (100)         | 251 (100)           |
-| patient_id   | mean_sd       | 500,870.9, 288775.5 | 502,838.3, 289259.6 | 483,242.0, 284361.7 |
+| patient_id   | count_percent | 2,500 (100)         | 2,235 (100)         | 265 (100)           |
+| patient_id   | mean_sd       | 501,115.4, 288404.5 | 498,728.2, 287947.9 | 521,249.5, 292000.2 |
 
 Customize reported characteristics:
 
@@ -102,15 +109,15 @@ report_characteristics(sample_data,
 
 | var_name     | measure_name  | total         | outcome_flag0 | outcome_flag1 |
 |:-------------|:--------------|:--------------|:--------------|:--------------|
-| binary_var1  | count_percent | 1,738 (69.5)  | 1,560 (69.4)  | 178 (70.9)    |
-| cat_varA     | count_percent | 306 (12.2)    | 271 (12.0)    | 35 (13.9)     |
-| cat_varB     | count_percent | 939 (37.6)    | 853 (37.9)    | 86 (34.3)     |
-| cat_varC     | count_percent | 930 (37.2)    | 838 (37.3)    | 92 (36.7)     |
-| cat_varNA    | count_percent | 325 (13.0)    | 287 (12.8)    | 38 (15.1)     |
-| numeric_var1 | count_percent | 2,500 (100.0) | 2,249 (100.0) | 251 (100.0)   |
+| binary_var1  | count_percent | 1,772 (70.9)  | 1,577 (70.6)  | 195 (73.6)    |
+| cat_varA     | count_percent | 327 (13.1)    | 289 (12.9)    | 38 (14.3)     |
+| cat_varB     | count_percent | 938 (37.5)    | 845 (37.8)    | 93 (35.1)     |
+| cat_varC     | count_percent | 931 (37.2)    | 829 (37.1)    | 102 (38.5)    |
+| cat_varNA    | count_percent | 304 (12.2)    | 272 (12.2)    | 32 (12.1)     |
+| numeric_var1 | count_percent | 2,500 (100.0) | 2,235 (100.0) | 265 (100.0)   |
 | numeric_var1 | median_iqr    | 2 (1, 4)      | 2 (1, 3)      | 5 (3, 7)      |
-| numeric_var2 | count_percent | 2,500 (100.0) | 2,249 (100.0) | 251 (100.0)   |
-| numeric_var2 | mean_sd       | 0.50, 0.29    | 0.50, 0.29    | 0.50, 0.31    |
+| numeric_var2 | count_percent | 2,500 (100.0) | 2,235 (100.0) | 265 (100.0)   |
+| numeric_var2 | mean_sd       | 0.49, 0.29    | 0.49, 0.29    | 0.51, 0.28    |
 
 Annotate model objects.
 
@@ -129,9 +136,9 @@ report_model(surv_mod,
              d = sample_data) %>% knitr::kable(format="markdown")
 ```
 
-| variable_labels                            | outcome_freq_comparison | outcome_freq_reference | estimate_CI      | p_round | variables    |  estimate | std.error |   statistic |   p.value |  conf_low | conf_high |
-|:-------------------------------------------|:------------------------|:-----------------------|:-----------------|:--------|:-------------|----------:|----------:|------------:|----------:|----------:|----------:|
-| Categorical variable B (Reference A)       | 86/939                  | 35/306                 | 1.03 (0.69-1.52) | 0.90    | cat_varB     | 1.0255944 | 0.2020899 |   0.1250551 | 0.9004799 | 0.6901705 | 1.5240348 |
-| Categorical variable C (Reference A)       | 92/930                  | 35/306                 | 1.04 (0.70-1.54) | 0.83    | cat_varC     | 1.0431768 | 0.2001394 |   0.2112061 | 0.8327264 | 0.7046913 | 1.5442476 |
-| Binary variable (Reference negative class) | 178/1,738               | 73/762                 | 0.99 (0.73-1.33) | 0.94    | binary_var1  | 0.9892903 | 0.1525028 |  -0.0706052 | 0.9437120 | 0.7336909 | 1.3339340 |
-| Uniform continuous variable                | \-                      | \-                     | 0.10 (0.07-0.16) | \<0.001 | numeric_var2 | 0.1017130 | 0.2256810 | -10.1275696 | 0.0000000 | 0.0653546 | 0.1582984 |
+| variable_labels                            | outcome_freq_comparison | outcome_freq_reference | estimate_CI      | p_round | variables    |  estimate | std.error | statistic |   p.value |  conf_low | conf_high |
+|:-------------------------------------------|:------------------------|:-----------------------|:-----------------|:--------|:-------------|----------:|----------:|----------:|----------:|----------:|----------:|
+| Categorical variable B (Reference A)       | 93/938                  | 38/327                 | 1.30 (0.88-1.91) | 0.19    | cat_varB     | 1.2960987 | 0.1981580 |  1.308848 | 0.1905859 | 0.8789530 | 1.9112192 |
+| Categorical variable C (Reference A)       | 102/931                 | 38/327                 | 1.32 (0.90-1.94) | 0.16    | cat_varC     | 1.3210508 | 0.1962239 |  1.418927 | 0.1559202 | 0.8992769 | 1.9406428 |
+| Binary variable (Reference negative class) | 195/1,772               | 70/728                 | 1.28 (0.94-1.73) | 0.11    | binary_var1  | 1.2763077 | 0.1543260 |  1.580883 | 0.1139048 | 0.9431763 | 1.7271016 |
+| Uniform continuous variable                | \-                      | \-                     | 0.11 (0.07-0.17) | \<0.001 | numeric_var2 | 0.1073072 | 0.2405451 | -9.279172 | 0.0000000 | 0.0669694 | 0.1719417 |
