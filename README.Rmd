@@ -1,0 +1,120 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# rwekit
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of rwekit is to ...
+
+## Installation
+
+You can install the development version of rwekit from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("lindseymaek/rwekit")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+library(rwekit)
+library(dplyr)
+library(magrittr)
+## basic example code
+```
+
+Standardize column types by strings present in column names.
+
+```{r cars}
+# simulate messy data with NULLs and incorrect data types
+messy_df = data.frame(to_num_col = c("1" ,"2" , "NULL", "5"),
+                      to_date_col = c("2021-01-01", "2022-01-01", "2023-01-01", "NULL"),
+                      to_factor_col = c(1,0,0,0),
+                      to_character_col = c(123,456,568,789))
+
+
+clean_df = set_coltype_byname(d = messy_df,
+                   trim.names = "_col",
+                   numeric.features = "num",
+                   factor.features = "fact",
+                   character.features = "char",
+                   date.features = "date",
+                   date.format = "%Y-%m-%d")
+
+dplyr::glimpse(clean_df)
+```
+
+Quickly generate Table 1, with several options to customize.
+
+```{r pressure, echo = FALSE}
+# simulate patient data
+size = 2500
+patient_id = sample(1:1000000,size) 
+sample_data = as.data.frame(patient_id) %>%
+  dplyr::mutate(outcome_flag = rbinom(size, 1, prob = c(0.1)),
+                binary_var = factor(rbinom(size,1,prob=c(0.7))),
+                numeric_var1=round(rchisq(size,5)),
+                numeric_var2=runif(size),
+                cat_var=factor(rbinom(size,3,prob=c(0.5)))) %>%
+  dplyr::mutate(numeric_var1 = ifelse(outcome_flag==0, numeric_var1*numeric_var2,numeric_var1),
+                cat_var = dplyr::case_when(cat_var==0~"A",
+                                          cat_var==1~"B",
+                                          cat_var==2~"C",
+                                          TRUE ~ NA))
+
+
+# Table 1 grouped by outcome_flag
+report_characteristics(sample_data, group = "outcome_flag")
+```
+
+Customize reported characteristics:
+
+```{r}
+report_characteristics(sample_data,
+                      cat.cols = c("binary_var","cat_var"),
+                      num.cols = c("numeric_var1", "numeric_var2"),
+                      group = "outcome_flag",
+                      col.exclude.levels = c(0),
+                      round.percent = 1,
+                      round.places = c(0,2),
+                      return.summaries = c("count_percent", "mean_sd", "median_iqr"),
+                      return.summaries.bycol = list(c(TRUE, TRUE), # count_percent
+                                                    c(FALSE, TRUE), # mean_sd
+                                                    c(TRUE, FALSE)) # median_iqr
+                      )
+```
+
+Annotate model objects.
+
+```{r}
+# fit a sample survival model
+surv_mod = survival::coxph(survival::Surv(event = outcome_flag, time = numeric_var1) ~ binary_var + cat_var + numeric_var2, data = sample_data)
+
+# formalize model labels
+mod_labels = data.frame(vars = c( "cat_varB", "cat_varC", "binary_var1", "numeric_var2"),
+                labs = c("Categorical variable B (Reference A)", "Categorical variable C (Reference A)","Binary variable (Reference negative class)","Uniform continuous variable"))
+
+# annotate models
+report_model(surv_mod, 
+             variable.labels = mod_labels,
+             outcome.var = "outcome_flag",
+             d = sample_data)
+```
+

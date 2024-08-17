@@ -1,20 +1,25 @@
 Package: rwekit
 Type: Package
-Title: Simple toolkit for real-world evidence analysis
-Version: 0
-Authors@R: person("Lindsey","Kornowske", "lindsey.kornowske@yahoo.com", role = c("aut", "cre"))
-Description: Contains functions to expedite common workflows in real-world evidence analysis including univariate and bivariate exploratory data analysis, "Table 1" development, and formatting model objects for forest plots.
+Title: Simple reporting toolkit for real-world evidence analysis
+Version: 0.0.0.9000
+Authors@R: person("Lindsey","Kornowske", email = "lindsey.kornowske@yahoo.com", role = c("aut", "cre"))
+Description: Simplifies reporting of common analyses in real-world evidence studies, 
+    with functions for Table 1 customization and model object annotation.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Imports:
     broom,
     dplyr,
     magrittr,
-    stringr
+    stringr,
+    purrr,
+    survival,
+    tidyr
 Suggests: 
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Oxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 VignetteBuilder: knitr
