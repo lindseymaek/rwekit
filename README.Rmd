@@ -37,7 +37,7 @@ This is a basic example which shows you how to solve a common problem:
 library(rwekit)
 library(dplyr)
 library(magrittr)
-## basic example code
+library(knitr)
 ```
 
 Standardize column types by strings present in column names.
@@ -81,7 +81,7 @@ sample_data = as.data.frame(patient_id) %>%
 
 
 # Table 1 grouped by outcome_flag
-report_characteristics(sample_data, group = "outcome_flag")
+report_characteristics(sample_data, group = "outcome_flag") %>% knitr::kable(format="markdown")
 ```
 
 Customize reported characteristics:
@@ -98,7 +98,7 @@ report_characteristics(sample_data,
                       return.summaries.bycol = list(c(TRUE, TRUE), # count_percent
                                                     c(FALSE, TRUE), # mean_sd
                                                     c(TRUE, FALSE)) # median_iqr
-                      )
+                      ) %>% knitr::kable(format="markdown")
 ```
 
 Annotate model objects.
@@ -115,6 +115,6 @@ mod_labels = data.frame(vars = c( "cat_varB", "cat_varC", "binary_var1", "numeri
 report_model(surv_mod, 
              variable.labels = mod_labels,
              outcome.var = "outcome_flag",
-             d = sample_data)
+             d = sample_data) %>% knitr::kable(format="markdown")
 ```
 

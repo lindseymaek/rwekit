@@ -34,7 +34,7 @@ library(dplyr)
 #> 
 #>     intersect, setdiff, setequal, union
 library(magrittr)
-## basic example code
+library(knitr)
 ```
 
 Standardize column types by strings present in column names.
@@ -66,23 +66,22 @@ dplyr::glimpse(clean_df)
 
 Quickly generate Table 1, with several options to customize.
 
-    #> # A tibble: 14 × 5
-    #>    var_name     measure_name  total                 outcome_flag0  outcome_flag1
-    #>    <chr>        <chr>         <chr>                 <chr>          <chr>        
-    #>  1 binary_var0  count_percent "748 (30)"            "671 (30)"     "77 (29)"    
-    #>  2 binary_var1  count_percent "1,752 (70)"          "1,559 (70)"   "193 (71)"   
-    #>  3 cat_varA     count_percent "317 (13)"            "276 (12)"     "41 (15)"    
-    #>  4 cat_varB     count_percent "931 (37)"            "831 (37)"     "100 (37)"   
-    #>  5 cat_varC     count_percent "931 (37)"            "832 (37)"     "99 (37)"    
-    #>  6 cat_varNA    count_percent "321 (13)"            "291 (13)"     "30 (11)"    
-    #>  7 numeric_var1 count_percent "2,500 (100)"         "2,230 (100)"  "270 (100)"  
-    #>  8 numeric_var1 mean_sd       "      2.7, 2.6"      "      2.5, 2… "      5.1, …
-    #>  9 numeric_var2 count_percent "2,500 (100)"         "2,230 (100)"  "270 (100)"  
-    #> 10 numeric_var2 mean_sd       "      0.5, 0.3"      "      0.5, 0… "      0.5, …
-    #> 11 outcome_flag count_percent "2,500 (100)"         "2,230 (100)"  "270 (100)"  
-    #> 12 outcome_flag mean_sd       "      0.1, 0.3"      "      0.0, 0… "      1.0, …
-    #> 13 patient_id   count_percent "2,500 (100)"         "2,230 (100)"  "270 (100)"  
-    #> 14 patient_id   mean_sd       "502,088.5, 288858.3" "504,378.4, 2… "483,175.4, …
+| var_name     | measure_name  | total               | outcome_flag0       | outcome_flag1       |
+|:-------------|:--------------|:--------------------|:--------------------|:--------------------|
+| binary_var0  | count_percent | 762 (30)            | 689 (31)            | 73 (29)             |
+| binary_var1  | count_percent | 1,738 (70)          | 1,560 (69)          | 178 (71)            |
+| cat_varA     | count_percent | 306 (12)            | 271 (12)            | 35 (14)             |
+| cat_varB     | count_percent | 939 (38)            | 853 (38)            | 86 (34)             |
+| cat_varC     | count_percent | 930 (37)            | 838 (37)            | 92 (37)             |
+| cat_varNA    | count_percent | 325 (13)            | 287 (13)            | 38 (15)             |
+| numeric_var1 | count_percent | 2,500 (100)         | 2,249 (100)         | 251 (100)           |
+| numeric_var1 | mean_sd       | 2.8, 2.6            | 2.5, 2.4            | 5.1, 3.0            |
+| numeric_var2 | count_percent | 2,500 (100)         | 2,249 (100)         | 251 (100)           |
+| numeric_var2 | mean_sd       | 0.5, 0.3            | 0.5, 0.3            | 0.5, 0.3            |
+| outcome_flag | count_percent | 2,500 (100)         | 2,249 (100)         | 251 (100)           |
+| outcome_flag | mean_sd       | 0.1, 0.3            | 0.0, 0.0            | 1.0, 0.0            |
+| patient_id   | count_percent | 2,500 (100)         | 2,249 (100)         | 251 (100)           |
+| patient_id   | mean_sd       | 500,870.9, 288775.5 | 502,838.3, 289259.6 | 483,242.0, 284361.7 |
 
 Customize reported characteristics:
 
@@ -98,20 +97,20 @@ report_characteristics(sample_data,
                       return.summaries.bycol = list(c(TRUE, TRUE), # count_percent
                                                     c(FALSE, TRUE), # mean_sd
                                                     c(TRUE, FALSE)) # median_iqr
-                      )
-#> # A tibble: 9 × 5
-#>   var_name     measure_name  total         outcome_flag0 outcome_flag1
-#>   <chr>        <chr>         <chr>         <chr>         <chr>        
-#> 1 binary_var1  count_percent 1,752 (70.1)  1,559 (69.9)  193 (71.5)   
-#> 2 cat_varA     count_percent 317 (12.7)    276 (12.4)    41 (15.2)    
-#> 3 cat_varB     count_percent 931 (37.2)    831 (37.3)    100 (37.0)   
-#> 4 cat_varC     count_percent 931 (37.2)    832 (37.3)    99 (36.7)    
-#> 5 cat_varNA    count_percent 321 (12.8)    291 (13.0)    30 (11.1)    
-#> 6 numeric_var1 count_percent 2,500 (100.0) 2,230 (100.0) 270 (100.0)  
-#> 7 numeric_var1 median_iqr    2 (1, 4)      2 (1, 3)      4 (3, 7)     
-#> 8 numeric_var2 count_percent 2,500 (100.0) 2,230 (100.0) 270 (100.0)  
-#> 9 numeric_var2 mean_sd       0.50, 0.29    0.50, 0.29    0.50, 0.27
+                      ) %>% knitr::kable(format="markdown")
 ```
+
+| var_name     | measure_name  | total         | outcome_flag0 | outcome_flag1 |
+|:-------------|:--------------|:--------------|:--------------|:--------------|
+| binary_var1  | count_percent | 1,738 (69.5)  | 1,560 (69.4)  | 178 (70.9)    |
+| cat_varA     | count_percent | 306 (12.2)    | 271 (12.0)    | 35 (13.9)     |
+| cat_varB     | count_percent | 939 (37.6)    | 853 (37.9)    | 86 (34.3)     |
+| cat_varC     | count_percent | 930 (37.2)    | 838 (37.3)    | 92 (36.7)     |
+| cat_varNA    | count_percent | 325 (13.0)    | 287 (12.8)    | 38 (15.1)     |
+| numeric_var1 | count_percent | 2,500 (100.0) | 2,249 (100.0) | 251 (100.0)   |
+| numeric_var1 | median_iqr    | 2 (1, 4)      | 2 (1, 3)      | 5 (3, 7)      |
+| numeric_var2 | count_percent | 2,500 (100.0) | 2,249 (100.0) | 251 (100.0)   |
+| numeric_var2 | mean_sd       | 0.50, 0.29    | 0.50, 0.29    | 0.50, 0.31    |
 
 Annotate model objects.
 
@@ -127,20 +126,12 @@ mod_labels = data.frame(vars = c( "cat_varB", "cat_varC", "binary_var1", "numeri
 report_model(surv_mod, 
              variable.labels = mod_labels,
              outcome.var = "outcome_flag",
-             d = sample_data)
-#>                              variable_labels outcome_freq_comparison
-#> 1       Categorical variable B (Reference A)                 100/931
-#> 2       Categorical variable C (Reference A)                  99/931
-#> 3 Binary variable (Reference negative class)               193/1,752
-#> 4                Uniform continuous variable                       -
-#>   outcome_freq_reference      estimate_CI p_round    variables   estimate
-#> 1                 41/317 0.86 (0.60-1.24)    0.43     cat_varB 0.86399411
-#> 2                 41/317 0.90 (0.62-1.29)    0.56     cat_varC 0.89559937
-#> 3                 77/748 1.05 (0.79-1.39)    0.74  binary_var1 1.04860943
-#> 4                      - 0.07 (0.04-0.10)  <0.001 numeric_var2 0.06659688
-#>   std.error   statistic      p.value   conf_low conf_high
-#> 1 0.1863931  -0.7843065 4.328603e-01 0.59958767 1.2449986
-#> 2 0.1868814  -0.5900112 5.551831e-01 0.62092633 1.2917768
-#> 3 0.1453152   0.3266344 7.439445e-01 0.78871706 1.3941397
-#> 4 0.2277996 -11.8924583 1.295369e-32 0.04261382 0.1040776
+             d = sample_data) %>% knitr::kable(format="markdown")
 ```
+
+| variable_labels                            | outcome_freq_comparison | outcome_freq_reference | estimate_CI      | p_round | variables    |  estimate | std.error |   statistic |   p.value |  conf_low | conf_high |
+|:-------------------------------------------|:------------------------|:-----------------------|:-----------------|:--------|:-------------|----------:|----------:|------------:|----------:|----------:|----------:|
+| Categorical variable B (Reference A)       | 86/939                  | 35/306                 | 1.03 (0.69-1.52) | 0.90    | cat_varB     | 1.0255944 | 0.2020899 |   0.1250551 | 0.9004799 | 0.6901705 | 1.5240348 |
+| Categorical variable C (Reference A)       | 92/930                  | 35/306                 | 1.04 (0.70-1.54) | 0.83    | cat_varC     | 1.0431768 | 0.2001394 |   0.2112061 | 0.8327264 | 0.7046913 | 1.5442476 |
+| Binary variable (Reference negative class) | 178/1,738               | 73/762                 | 0.99 (0.73-1.33) | 0.94    | binary_var1  | 0.9892903 | 0.1525028 |  -0.0706052 | 0.9437120 | 0.7336909 | 1.3339340 |
+| Uniform continuous variable                | \-                      | \-                     | 0.10 (0.07-0.16) | \<0.001 | numeric_var2 | 0.1017130 | 0.2256810 | -10.1275696 | 0.0000000 | 0.0653546 | 0.1582984 |
