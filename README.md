@@ -21,72 +21,36 @@ You can install the development version of rwekit from
 devtools::install_github("lindseymaek/rwekit")
 ```
 
-## Example
+## Table 1 Example
 
-This is a basic example which shows you how to solve a common problem:
+Examples are worked on randomly generated data used to simulate a
+patient cohort with a set of attributes and a binary outcome.
 
 ``` r
 library(rwekit)
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 library(magrittr)
 library(knitr)
+library(kableExtra)
+
+# simulate patient data
+size = 2500
+patient_id = sample(1:1000000,size) 
+sample_data = as.data.frame(patient_id) %>%
+  dplyr::mutate(outcome_flag = rbinom(size, 1, prob = c(0.1)),
+                binary_var = factor(rbinom(size,1,prob=c(0.7))),
+                numeric_var1=round(rchisq(size,5)),
+                numeric_var2=runif(size),
+                cat_var=factor(rbinom(size,3,prob=c(0.5)))) %>%
+  dplyr::mutate(numeric_var1 = ifelse(outcome_flag==0, numeric_var1*numeric_var2,numeric_var1),
+                cat_var = dplyr::case_when(cat_var==0~"A",
+                                          cat_var==1~"B",
+                                          cat_var==2~"C",
+                                          TRUE ~ NA))
 ```
 
-Standardize column types by strings present in column names.
-
-``` r
-# simulate messy data with NULLs and incorrect data types
-messy_df = data.frame(to_num_col = c("1" ,"2" , "NULL", "5"),
-                      to_date_col = c("2021-01-01", "2022-01-01", "2023-01-01", "NULL"),
-                      to_factor_col = c(1,0,0,0),
-                      to_character_col = c(123,456,568,789))
-
-
-clean_df = set_coltype_byname(d = messy_df,
-                   trim.names = "_col",
-                   numeric.features = "num",
-                   factor.features = "fact",
-                   character.features = "char",
-                   date.features = "date",
-                   date.format = "%Y-%m-%d")
-
-dplyr::glimpse(clean_df)
-#> Rows: 4
-#> Columns: 4
-#> $ to_num       <dbl> 1, 2, NA, 5
-#> $ to_date      <date> 2021-01-01, 2022-01-01, 2023-01-01, NA
-#> $ to_factor    <fct> 1, 0, 0, 0
-#> $ to_character <chr> "123", "456", "568", "789"
-```
-
-Quickly generate Table 1, with several options to customize.
-
-| var_name     | measure_name  | total               | outcome_flag0       | outcome_flag1       |
-|:-------------|:--------------|:--------------------|:--------------------|:--------------------|
-| binary_var0  | count_percent | 751 (30)            | 665 (30)            | 86 (31)             |
-| binary_var1  | count_percent | 1,749 (70)          | 1,558 (70)          | 191 (69)            |
-| cat_varA     | count_percent | 319 (13)            | 283 (13)            | 36 (13)             |
-| cat_varB     | count_percent | 956 (38)            | 832 (37)            | 124 (45)            |
-| cat_varC     | count_percent | 905 (36)            | 816 (37)            | 89 (32)             |
-| cat_varNA    | count_percent | 320 (13)            | 292 (13)            | 28 (10)             |
-| numeric_var1 | count_percent | 2,500 (100)         | 2,223 (100)         | 277 (100)           |
-| numeric_var1 | mean_sd       | 2.8, 2.5            | 2.6, 2.3            | 5.0, 3.1            |
-| numeric_var2 | count_percent | 2,500 (100)         | 2,223 (100)         | 277 (100)           |
-| numeric_var2 | mean_sd       | 0.5, 0.3            | 0.5, 0.3            | 0.5, 0.3            |
-| outcome_flag | count_percent | 2,500 (100)         | 2,223 (100)         | 277 (100)           |
-| outcome_flag | mean_sd       | 0.1, 0.3            | 0.0, 0.0            | 1.0, 0.0            |
-| patient_id   | count_percent | 2,500 (100)         | 2,223 (100)         | 277 (100)           |
-| patient_id   | mean_sd       | 491,729.6, 288629.1 | 491,780.2, 288737.3 | 491,323.7, 288280.1 |
-
-Customize reported characteristics:
+Use `report_characteristics()` to create Table 1 (cohort description
+table) for `sample_data`.
 
 ``` r
 report_characteristics(sample_data,
@@ -100,22 +64,200 @@ report_characteristics(sample_data,
                       return.summaries.bycol = list(c(TRUE, TRUE), # count_percent
                                                     c(FALSE, TRUE), # mean_sd
                                                     c(TRUE, FALSE)) # median_iqr
-                      ) %>% knitr::kable(format="markdown")
+                      ) %>% 
+  kable(format="markdown",
+        col.names = c("Variables", "Summary measure", " Total", "Patients without outcome", "Patients with outcome"),
+        caption = "Example Table 1. Summary measures reported for sample_data overall and by the value of outcome_flag",
+        align = "llccc") %>%
+  kable_styling(latex_options = "striped")
 ```
 
-| var_name     | measure_name  | total         | outcome_flag0 | outcome_flag1 |
-|:-------------|:--------------|:--------------|:--------------|:--------------|
-| binary_var1  | count_percent | 1,749 (70.0)  | 1,558 (70.1)  | 191 (69.0)    |
-| cat_varA     | count_percent | 319 (12.8)    | 283 (12.7)    | 36 (13.0)     |
-| cat_varB     | count_percent | 956 (38.2)    | 832 (37.4)    | 124 (44.8)    |
-| cat_varC     | count_percent | 905 (36.2)    | 816 (36.7)    | 89 (32.1)     |
-| cat_varNA    | count_percent | 320 (12.8)    | 292 (13.1)    | 28 (10.1)     |
-| numeric_var1 | count_percent | 2,500 (100.0) | 2,223 (100.0) | 277 (100.0)   |
-| numeric_var1 | median_iqr    | 2 (1, 4)      | 2 (1, 4)      | 4 (3, 7)      |
-| numeric_var2 | count_percent | 2,500 (100.0) | 2,223 (100.0) | 277 (100.0)   |
-| numeric_var2 | mean_sd       | 0.50, 0.29    | 0.50, 0.29    | 0.54, 0.29    |
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Example Table 1. Summary measures reported for sample_data overall and
+by the value of outcome_flag
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variables
+</th>
+<th style="text-align:left;">
+Summary measure
+</th>
+<th style="text-align:center;">
+Total
+</th>
+<th style="text-align:center;">
+Patients without outcome
+</th>
+<th style="text-align:center;">
+Patients with outcome
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+binary_var1
+</td>
+<td style="text-align:left;">
+count_percent
+</td>
+<td style="text-align:center;">
+1,734 (69.4)
+</td>
+<td style="text-align:center;">
+1,566 (69.6)
+</td>
+<td style="text-align:center;">
+168 (67.2)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cat_varA
+</td>
+<td style="text-align:left;">
+count_percent
+</td>
+<td style="text-align:center;">
+326 (13.0)
+</td>
+<td style="text-align:center;">
+296 (13.2)
+</td>
+<td style="text-align:center;">
+30 (12.0)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cat_varB
+</td>
+<td style="text-align:left;">
+count_percent
+</td>
+<td style="text-align:center;">
+945 (37.8)
+</td>
+<td style="text-align:center;">
+854 (38.0)
+</td>
+<td style="text-align:center;">
+91 (36.4)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cat_varC
+</td>
+<td style="text-align:left;">
+count_percent
+</td>
+<td style="text-align:center;">
+925 (37.0)
+</td>
+<td style="text-align:center;">
+827 (36.8)
+</td>
+<td style="text-align:center;">
+98 (39.2)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cat_varNA
+</td>
+<td style="text-align:left;">
+count_percent
+</td>
+<td style="text-align:center;">
+304 (12.2)
+</td>
+<td style="text-align:center;">
+273 (12.1)
+</td>
+<td style="text-align:center;">
+31 (12.4)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric_var1
+</td>
+<td style="text-align:left;">
+count_percent
+</td>
+<td style="text-align:center;">
+2,500 (100.0)
+</td>
+<td style="text-align:center;">
+2,250 (100.0)
+</td>
+<td style="text-align:center;">
+250 (100.0)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric_var1
+</td>
+<td style="text-align:left;">
+median_iqr
+</td>
+<td style="text-align:center;">
+2 (1, 4)
+</td>
+<td style="text-align:center;">
+2 (1, 3)
+</td>
+<td style="text-align:center;">
+4 (3, 7)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric_var2
+</td>
+<td style="text-align:left;">
+count_percent
+</td>
+<td style="text-align:center;">
+2,500 (100.0)
+</td>
+<td style="text-align:center;">
+2,250 (100.0)
+</td>
+<td style="text-align:center;">
+250 (100.0)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric_var2
+</td>
+<td style="text-align:left;">
+mean_sd
+</td>
+<td style="text-align:center;">
+0.49, 0.29
+</td>
+<td style="text-align:center;">
+0.49, 0.29
+</td>
+<td style="text-align:center;">
+0.51, 0.28
+</td>
+</tr>
+</tbody>
+</table>
 
-Annotate model objects.
+## Model Reporting Example
+
+A model predicting the outcome in the `sample_data` cohort is reported
+with formatted labels and the frequency distribution of the outcome in
+the comparison and reference levels of factor variables.
 
 ``` r
 # fit a sample survival model
@@ -129,12 +271,123 @@ mod_labels = data.frame(vars = c( "cat_varB", "cat_varC", "binary_var1", "numeri
 report_model(surv_mod, 
              variable.labels = mod_labels,
              outcome.var = "outcome_flag",
-             d = sample_data) %>% knitr::kable(format="markdown")
+             d = sample_data,
+             ratio.include.percent = TRUE) %>% 
+  select(variable_labels, outcome_freq_comparison, outcome_freq_reference, estimate_CI, p_round) %>%
+  knitr::kable(format="markdown",
+               col.names = c("Variable", "Comparison level", "Reference level", "Estimate (95% CI)", "P"),
+               caption = "Example table reporting survival model summary",
+               align = "lcccc") %>%
+  add_header_above(c(" " = 1, "Frequency of outcome" = 2, " " = 2)) %>%
+  kable_styling(latex_options = "striped")
 ```
 
-| variable_labels                            | outcome_freq_comparison | outcome_freq_reference | estimate_CI      | p_round | variables    |  estimate | std.error |   statistic |   p.value |  conf_low | conf_high |
-|:-------------------------------------------|:------------------------|:-----------------------|:-----------------|:--------|:-------------|----------:|----------:|------------:|----------:|----------:|----------:|
-| Categorical variable B (Reference A)       | 124/956                 | 36/319                 | 1.33 (0.92-1.93) | 0.13    | cat_varB     | 1.3303186 | 0.1907225 |   1.4965120 | 0.1345203 | 0.9154032 | 1.9332986 |
-| Categorical variable C (Reference A)       | 89/905                  | 36/319                 | 1.13 (0.76-1.67) | 0.55    | cat_varC     | 1.1269923 | 0.2007271 |   0.5955968 | 0.5514446 | 0.7604344 | 1.6702448 |
-| Binary variable (Reference negative class) | 191/1,749               | 86/751                 | 0.85 (0.64-1.11) | 0.24    | binary_var1  | 0.8470304 | 0.1400712 |  -1.1852457 | 0.2359203 | 0.6436802 | 1.1146224 |
-| Uniform continuous variable                | \-                      | \-                     | 0.09 (0.06-0.15) | \<0.001 | numeric_var2 | 0.0922383 | 0.2344896 | -10.1641166 | 0.0000000 | 0.0582523 | 0.1460526 |
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Example table reporting survival model summary
+</caption>
+<thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+
+Frequency of outcome
+
+</div>
+
+</th>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="2">
+</th>
+</tr>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:center;">
+Comparison level
+</th>
+<th style="text-align:center;">
+Reference level
+</th>
+<th style="text-align:center;">
+Estimate (95% CI)
+</th>
+<th style="text-align:center;">
+P
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Categorical variable B (Reference A)
+</td>
+<td style="text-align:center;">
+91/945 (10%)
+</td>
+<td style="text-align:center;">
+30/326 (9%)
+</td>
+<td style="text-align:center;">
+0.93 (0.61-1.41)
+</td>
+<td style="text-align:center;">
+0.72
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Categorical variable C (Reference A)
+</td>
+<td style="text-align:center;">
+98/925 (11%)
+</td>
+<td style="text-align:center;">
+30/326 (9%)
+</td>
+<td style="text-align:center;">
+1.10 (0.73-1.66)
+</td>
+<td style="text-align:center;">
+0.65
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Binary variable (Reference negative class)
+</td>
+<td style="text-align:center;">
+168/1,734 (10%)
+</td>
+<td style="text-align:center;">
+82/766 (11%)
+</td>
+<td style="text-align:center;">
+0.86 (0.65-1.15)
+</td>
+<td style="text-align:center;">
+0.31
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Uniform continuous variable
+</td>
+<td style="text-align:center;">
+
+- </td>
+  <td style="text-align:center;">
+
+  - </td>
+    <td style="text-align:center;">
+    0.06 (0.04-0.10)
+    </td>
+    <td style="text-align:center;">
+    \<0.001
+    </td>
+    </tr>
+    </tbody>
+    </table>

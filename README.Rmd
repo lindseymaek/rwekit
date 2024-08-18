@@ -1,5 +1,6 @@
 ---
 output: github_document
+always_allow_html: true
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -32,41 +33,17 @@ You can install the development version of rwekit from [GitHub](https://github.c
 devtools::install_github("lindseymaek/rwekit")
 ```
 
-## Example
+## Table 1 Example
 
-This is a basic example which shows you how to solve a common problem:
+Examples are worked on randomly generated data used to simulate a patient cohort with a set of attributes and a binary outcome.
 
-```{r example}
+```{r example, message=FALSE, warning=FALSE, echo=TRUE}
 library(rwekit)
 library(dplyr)
 library(magrittr)
 library(knitr)
-```
+library(kableExtra)
 
-Standardize column types by strings present in column names.
-
-```{r cars}
-# simulate messy data with NULLs and incorrect data types
-messy_df = data.frame(to_num_col = c("1" ,"2" , "NULL", "5"),
-                      to_date_col = c("2021-01-01", "2022-01-01", "2023-01-01", "NULL"),
-                      to_factor_col = c(1,0,0,0),
-                      to_character_col = c(123,456,568,789))
-
-
-clean_df = set_coltype_byname(d = messy_df,
-                   trim.names = "_col",
-                   numeric.features = "num",
-                   factor.features = "fact",
-                   character.features = "char",
-                   date.features = "date",
-                   date.format = "%Y-%m-%d")
-
-dplyr::glimpse(clean_df)
-```
-
-Quickly generate Table 1, with several options to customize.
-
-```{r pressure, echo = FALSE}
 # simulate patient data
 size = 2500
 patient_id = sample(1:1000000,size) 
@@ -81,13 +58,11 @@ sample_data = as.data.frame(patient_id) %>%
                                           cat_var==1~"B",
                                           cat_var==2~"C",
                                           TRUE ~ NA))
-
-
-# Table 1 grouped by outcome_flag
-report_characteristics(sample_data, group = "outcome_flag") %>% knitr::kable(format="markdown")
 ```
 
-Customize reported characteristics:
+
+Use `report_characteristics()` to create Table 1 (cohort description table) for `sample_data`.
+
 
 ```{r}
 report_characteristics(sample_data,
@@ -101,10 +76,17 @@ report_characteristics(sample_data,
                       return.summaries.bycol = list(c(TRUE, TRUE), # count_percent
                                                     c(FALSE, TRUE), # mean_sd
                                                     c(TRUE, FALSE)) # median_iqr
-                      ) %>% knitr::kable(format="markdown")
+                      ) %>% 
+  kable(format="markdown",
+        col.names = c("Variables", "Summary measure", " Total", "Patients without outcome", "Patients with outcome"),
+        caption = "Example Table 1. Summary measures reported for sample_data overall and by the value of outcome_flag",
+        align = "llccc") %>%
+  kable_styling(latex_options = "striped")
 ```
 
-Annotate model objects.
+## Model Reporting Example
+
+A model predicting the outcome in the `sample_data` cohort is reported with formatted labels and the frequency distribution of the outcome in the comparison and reference levels of factor variables.
 
 ```{r}
 # fit a sample survival model
@@ -118,6 +100,14 @@ mod_labels = data.frame(vars = c( "cat_varB", "cat_varC", "binary_var1", "numeri
 report_model(surv_mod, 
              variable.labels = mod_labels,
              outcome.var = "outcome_flag",
-             d = sample_data) %>% knitr::kable(format="markdown")
+             d = sample_data,
+             ratio.include.percent = TRUE) %>% 
+  select(variable_labels, outcome_freq_comparison, outcome_freq_reference, estimate_CI, p_round) %>%
+  knitr::kable(format="markdown",
+               col.names = c("Variable", "Comparison level", "Reference level", "Estimate (95% CI)", "P"),
+               caption = "Example table reporting survival model summary",
+               align = "lcccc") %>%
+  add_header_above(c(" " = 1, "Frequency of outcome" = 2, " " = 2)) %>%
+  kable_styling(latex_options = "striped")
 ```
 
