@@ -12,11 +12,12 @@
 #' @param round.estimate An integer representing the number of places to which the model estimate and confidence intervals are rounded.
 #' @param ratio.include.percent Report the percent of the outcome frequency. Default is FALSE.
 #' @param verbose See messages about model outputs. Default is TRUE
-#' @param p.round.method Integer corresponding to desired rounding convention. See Details.
-#' @param p.lead.zero Boolean: if FALSE, no 0 will be reported in the place before the decimal. Defaults to TRUE.
-#' @aliases Passed on to the broom::tidy() functions
+#' @param p.round.method integer corresponding to desired rounding convention. See Details.
+#' @param p.lead.zero if FALSE, no 0 will be reported in the place before the decimal. Defaults to TRUE.
+#' @param conf.level The confidence level for the intervals passed to tidy() from the broom package. Default = 0.95
 #'
 #' @return A dataframe with an labeled model summary
+#'
 #' @export
 #'
 #' @details
@@ -46,7 +47,8 @@
 #'                                            TRUE ~ "D"))
 #'
 #' # fit CoxPH model
-#' surv_mod = survival::coxph(survival::Surv(event = outcome_flag, time = numeric_var1) ~ binary_var + cat_var + numeric_var2, data = sample_data)
+#' surv_mod = survival::coxph(survival::Surv(event = outcome_flag, time = numeric_var1) ~ binary_var + cat_var + numeric_var2,
+#' data = sample_data)
 #'
 #' # simple formatted model reporting
 #' report_model(surv_mod)
@@ -55,7 +57,10 @@
 #'
 #' # some formatted labels for sample_data
 #' mod_labels = data.frame(vars = c( "cat_varB", "cat_varC", "binary_var1", "numeric_var2"),
-#' labs = c("Categorical variable B (Reference A)", "Categorical variable C (Reference A)","Binary variable (Reference negative class)","Uniform continuous variable"))
+#' labs = c("Categorical variable B (Reference A)",
+#'          "Categorical variable C (Reference A)",
+#'          "Binary variable (Reference negative class)",
+#'          "Uniform continuous variable"))
 #'
 #' # supply labels to variable.labels argument
 #' report_model(surv_mod, variable.labels = mod_labels)
@@ -78,12 +83,12 @@ report_model = function(x,
                         verbose = TRUE,
                         p.round.method = 1,
                         p.lead.zero = TRUE,
-                        ...) {
+                        conf.level = 0.95) {
 
 # report outcome frequency
 if (!is.null(outcome.var) & !is.null(d)) {
 
-  outcome_levels <- d %>% dplyr::select(all_of(outcome.var)) %>% dplyr::pull() %>% unique()
+  outcome_levels <- d %>% dplyr::select(dplyr::all_of(outcome.var)) %>% dplyr::pull() %>% unique()
 
   if (length(outcome_levels) > 2 & verbose == TRUE) {
     warning("outcome.var must be the name of a binary column in d")
@@ -133,8 +138,8 @@ if (!is.null(outcome.var) & !is.null(d)) {
 
 # tidy model and join ratios
   tidy_mod <- x %>%
-    broom::tidy(conf.int=TRUE, exponentiate=TRUE, ...) %>%
-    dplyr::filter(term!="(Intercept)")
+    broom::tidy(conf.int = TRUE, exponentiate = TRUE, conf.level = conf.level) %>%
+    dplyr::filter(term != "(Intercept)")
 
     if (!is.null(outcome.var)) {
 

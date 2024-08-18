@@ -24,15 +24,15 @@ report_frequency = function(d,
                             col.exclude.levels = NULL) {
 
   if (!is.null(group)) {
-    group_col <- d %>% dplyr::select(all_of(group)) %>% dplyr::pull()
+    group_col <- d %>% dplyr::select(dplyr::all_of(group)) %>% dplyr::pull()
   } else {
     group_col <- NULL;
   }
 
   df_comp <- d %>%
-    dplyr::select(all_of(cols)) %>%
+    dplyr::select(dplyr::all_of(cols)) %>%
     as.list() %>%
-    purrr:::map(compute_frequency,
+    purrr::map(compute_frequency,
                 group=group_col,
                 round.percent=round.percent) %>%
     purrr::list_rbind(names_to = "var_name");
@@ -51,12 +51,12 @@ report_frequency = function(d,
       df_format <- df_format %>%
         dplyr::select(var_name, measure_name,group_levels, count_percent) %>%
         dplyr::filter(!group_levels %in% group.exclude.levels) %>%
-        tidyr::pivot_wider(names_from = "group_levels", values_from = "count_percent", names_prefix=group)
+        tidyr::pivot_wider(names_from = "group_levels", values_from = "count_percent", names_prefix = group)
 
     } else {
 
       df_format <- df_format %>%
-        dplyr::select(var_name, measure_name,count_percent)
+        dplyr::select(var_name, measure_name, count_percent)
     }
 
     return(df_format)

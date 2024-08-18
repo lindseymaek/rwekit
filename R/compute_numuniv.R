@@ -18,17 +18,17 @@ compute_numuniv = function(x,
   y <- as.data.frame(x)
 
   if (!is.null(group)) {
-    y <- cbind.data.frame(x, group) %>% group_by({{group}})
+    y <- cbind.data.frame(x, group) %>% dplyr::group_by({{group}})
     }
 
   summary_df <- y %>%
     dplyr::summarize(mean = mean(.data[[x_name]], na.rm = TRUE),
-                     stdev = sd(.data[[x_name]], na.rm = TRUE),
+                     stdev = stats::sd(.data[[x_name]], na.rm = TRUE),
                      min = min(.data[[x_name]], na.rm = TRUE),
                      max = max(.data[[x_name]], na.rm = TRUE),
-                     median = median(.data[[x_name]], na.rm = TRUE),
-                     q.25 = quantile(.data[[x_name]], probs = 0.25, na.rm = TRUE, type = 2),
-                     q.75 = quantile(.data[[x_name]], probs = 0.75, na.rm = TRUE, type = 2),
+                     median = stats::median(.data[[x_name]], na.rm = TRUE),
+                     q.25 = stats::quantile(.data[[x_name]], probs = 0.25, na.rm = TRUE, type = 2),
+                     q.75 = stats::quantile(.data[[x_name]], probs = 0.75, na.rm = TRUE, type = 2),
                      count = sum(!is.na(.data[[x_name]])),
                      percent = 100*sum(!is.na(.data[[x_name]]))/length(.data[[x_name]]),
                      missing_count = sum(is.na(.data[[x_name]])),

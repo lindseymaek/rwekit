@@ -2,12 +2,6 @@
 % Please edit documentation in R/report_model.R
 \name{report_model}
 \alias{report_model}
-\alias{Passed}
-\alias{on}
-\alias{to}
-\alias{the}
-\alias{broom::tidy()}
-\alias{functions}
 \title{Annotate model objects}
 \usage{
 report_model(
@@ -23,7 +17,7 @@ report_model(
   verbose = TRUE,
   p.round.method = 1,
   p.lead.zero = TRUE,
-  ...
+  conf.level = 0.95
 )
 }
 \arguments{
@@ -47,9 +41,11 @@ report_model(
 
 \item{verbose}{See messages about model outputs. Default is TRUE}
 
-\item{p.round.method}{Integer corresponding to desired rounding convention. See Details.}
+\item{p.round.method}{integer corresponding to desired rounding convention. See Details.}
 
-\item{p.lead.zero}{Boolean: if FALSE, no 0 will be reported in the place before the decimal. Defaults to TRUE.}
+\item{p.lead.zero}{if FALSE, no 0 will be reported in the place before the decimal. Defaults to TRUE.}
+
+\item{conf.level}{The confidence level for the intervals passed to tidy() from the broom package. Default = 0.95}
 }
 \value{
 A dataframe with an labeled model summary
@@ -84,7 +80,8 @@ dplyr::mutate(outcome_flag = rbinom(size, 1, prob = c(0.1)),
                                            TRUE ~ "D"))
 
 # fit CoxPH model
-surv_mod = survival::coxph(survival::Surv(event = outcome_flag, time = numeric_var1) ~ binary_var + cat_var + numeric_var2, data = sample_data)
+surv_mod = survival::coxph(survival::Surv(event = outcome_flag, time = numeric_var1) ~ binary_var + cat_var + numeric_var2,
+data = sample_data)
 
 # simple formatted model reporting
 report_model(surv_mod)
@@ -93,7 +90,10 @@ report_model(surv_mod)
 
 # some formatted labels for sample_data
 mod_labels = data.frame(vars = c( "cat_varB", "cat_varC", "binary_var1", "numeric_var2"),
-labs = c("Categorical variable B (Reference A)", "Categorical variable C (Reference A)","Binary variable (Reference negative class)","Uniform continuous variable"))
+labs = c("Categorical variable B (Reference A)",
+         "Categorical variable C (Reference A)",
+         "Binary variable (Reference negative class)",
+         "Uniform continuous variable"))
 
 # supply labels to variable.labels argument
 report_model(surv_mod, variable.labels = mod_labels)

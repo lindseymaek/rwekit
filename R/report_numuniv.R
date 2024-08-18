@@ -13,6 +13,7 @@
 #'
 #' @return A dataframe with all summary statistics as variables
 #'
+#'
 #' @details
 #' return.summaries.bycol accepts a list of length return.summaries, where each list element controls the summary output in the same position as return.summaries. Each element should contain a boolean vector of length num.cols, with TRUE describing if the column indicated by the string in the same position of num.cols should be reported for that summary.
 #'
@@ -32,11 +33,11 @@ report_numuniv <- function(d,
                            return.summaries.bycol = NULL) {
 
   col_list <- d %>%
-    dplyr::select(all_of(cols)) %>%
+    dplyr::select(dplyr::all_of(cols)) %>%
     as.list()
 
   if (!is.null(group)) {
-    group_list <- d %>% dplyr::select(all_of(group)) %>% as.list()
+    group_list <- d %>% dplyr::select(dplyr::all_of(group)) %>% as.list()
   } else {
     group_list <- list(NULL)
   }

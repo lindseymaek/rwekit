@@ -10,9 +10,9 @@
 #' @param report.inverse A vector of strings containing the names of independent model variables for which the inverse of the estimate is desired for reporting.
 #' @param round.estimate An integer representing the number of places to which the model estimate and confidence intervals are rounded.
 #' @param verbose Boolean: if TRUE (Default), see messages about model outputs warning of possible common errors.
-#' @param p.round.method Integer corresponding to desired rounding convention. See Details.
-#' @param p.lead.zero Boolean: if FALSE, no 0 will be reported in the place before the decimal. Defaults to TRUE.
-#' @aliases Passed on to the broom::tidy() functions
+#' @param p.round.method integer corresponding to desired rounding convention. See Details.
+#' @param p.lead.zero if FALSE, no 0 will be reported in the place before the decimal. Defaults to TRUE.
+#' @param conf.level The confidence level for the intervals passed to tidy() from the broom package. Default = 0.95
 #'
 #' @return A dataframe with an labeled model summary
 #' @export
@@ -33,7 +33,7 @@ report_unadjusted <- function(d,
                               p.round.method = 1,
                               p.lead.zero = TRUE,
                               verbose = TRUE,
-                              ...
+                              conf.level = 0.95
                               ) {
 
   model.vars = as.list(model.vars);
@@ -41,21 +41,21 @@ report_unadjusted <- function(d,
   if(model.method=="glm_gaussian") {
 
     unadj.out <- lapply(model.vars,
-                        FUN = function(x) {broom::tidy(glm(as.formula(paste(outcome.var, "~",x)), data = d,family = "gaussian"), exponentiate = TRUE, conf.int=TRUE, ...)}) %>%
+                        FUN = function(x) {broom::tidy(stats::glm(stats::as.formula(paste(outcome.var, "~",x)), data = d,family = "gaussian"), exponentiate = TRUE, conf.int = TRUE, conf.level = conf.level)}) %>%
       dplyr::bind_rows() %>%
       dplyr::filter(term!= "(Intercept)")
 
   } else if(model.method=="glm_binomial") {
 
     unadj.out <- lapply(model.vars,
-                        FUN = function(x) {broom::tidy(glm(as.formula(paste(outcome.var, "~",x)), data = d,family = "binomial"), exponentiate = TRUE, conf.int=TRUE, ...)}) %>%
+                        FUN = function(x) {broom::tidy(stats::glm(stats::as.formula(paste(outcome.var, "~",x)), data = d,family = "binomial"), exponentiate = TRUE, conf.int = TRUE, conf.level = conf.level)}) %>%
       dplyr::bind_rows() %>%
       dplyr::filter(term!= "(Intercept)")
 
   } else if(model.method=="survival_coxph") {
 
     unadj.out <- lapply(model.vars,
-                        FUN = function(x) {broom::tidy(survival::coxph(as.formula(paste("survival::Surv(time = ", time.var, ", event = ", outcome.var,") ~", x)), data = d), exponentiate = TRUE, conf.int=TRUE, ...)}) %>%
+                        FUN = function(x) {broom::tidy(survival::coxph(stats::as.formula(paste("survival::Surv(time = ", time.var, ", event = ", outcome.var, ") ~", x)), data = d), exponentiate = TRUE, conf.int = TRUE, conf.level = conf.level)}) %>%
       dplyr::bind_rows()
 
   } else {

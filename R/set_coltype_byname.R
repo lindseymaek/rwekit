@@ -40,7 +40,8 @@ set_coltype_byname = function(d,
                            numeric.features = NULL,
                            date.features = NULL,
                            date.format = "%m/%d/%Y") {
-  d_na = d %>% dplyr::mutate(across(where(is.character), \(x) dplyr::na_if(x, "NULL")))
+
+  d_na = d %>% dplyr::mutate(dplyr::across(dplyr::where(is.character), \(x) dplyr::na_if(x, "NULL")))
 
   if (!is.null(trim.names)) {
     for (i in 1:length(trim.names)) {

@@ -2,12 +2,6 @@
 % Please edit documentation in R/report_unadjusted.R
 \name{report_unadjusted}
 \alias{report_unadjusted}
-\alias{Passed}
-\alias{on}
-\alias{to}
-\alias{the}
-\alias{broom::tidy()}
-\alias{functions}
 \title{Report bivariate effect size}
 \usage{
 report_unadjusted(
@@ -16,10 +10,12 @@ report_unadjusted(
   outcome.var,
   time.var,
   model.vars,
+  report.inverse = NULL,
   round.estimate = 2,
   p.round.method = 1,
   p.lead.zero = TRUE,
-  ...
+  verbose = TRUE,
+  conf.level = 0.95
 )
 }
 \arguments{
@@ -33,15 +29,17 @@ report_unadjusted(
 
 \item{model.vars}{Vector of strings containing the names of independent model variables for which bivariate analysis will be performed.}
 
-\item{round.estimate}{An integer representing the number of places to which the model estimate and confidence intervals are rounded.}
-
-\item{p.round.method}{Integer corresponding to desired rounding convention. See Details.}
-
-\item{p.lead.zero}{Boolean: if FALSE, no 0 will be reported in the place before the decimal. Defaults to TRUE.}
-
 \item{report.inverse}{A vector of strings containing the names of independent model variables for which the inverse of the estimate is desired for reporting.}
 
+\item{round.estimate}{An integer representing the number of places to which the model estimate and confidence intervals are rounded.}
+
+\item{p.round.method}{integer corresponding to desired rounding convention. See Details.}
+
+\item{p.lead.zero}{if FALSE, no 0 will be reported in the place before the decimal. Defaults to TRUE.}
+
 \item{verbose}{Boolean: if TRUE (Default), see messages about model outputs warning of possible common errors.}
+
+\item{conf.level}{The confidence level for the intervals passed to tidy() from the broom package. Default = 0.95}
 }
 \value{
 A dataframe with an labeled model summary
