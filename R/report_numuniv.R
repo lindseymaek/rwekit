@@ -68,33 +68,56 @@ report_numuniv <- function(d,
     if (!is.null(group)) {
 
       for (i in 1:length(return.summaries)) {
+
         rm_summary <- df_summary %>%
           dplyr::select(var_name, group_levels, return.summaries[i]);
 
         if (!is.null(return.summaries.bycol)) {
+
           rm_summary <- rm_summary %>%
             dplyr::filter(var_name %in% cols[return.summaries.bycol[[i]]])
+
         }
 
         list_summary[[i]] <- rm_summary %>%
           tidyr::pivot_wider(names_from = "group_levels", values_from = return.summaries[i], names_prefix=group)
+
       }
 
     } else {
+
       for (i in 1:length(return.summaries)) {
-        list_summary[[i]] <- df_summary %>%
-          dplyr::select(var_name, return.summaries[i]) %>%
-          dplyr::rename("value" = return.summaries[i]);
+
+        rm_summary <- df_summary %>%
+          dplyr::select(var_name, return.summaries[i])
+
+        if (!is.null(return.summaries.bycol)) {
+
+          rm_summary <- rm_summary %>%
+            dplyr::filter(var_name %in% cols[return.summaries.bycol[[i]]])
+
+        }
+
+        list_summary[[i]] <- rm_summary %>%
+          dplyr::rename("value" = return.summaries[i])
+
       }
+
     }
-    names(list_summary) <- return.summaries;
+
+    names(list_summary) <- return.summaries
+
     list_summary <- list_summary %>%
       purrr::list_rbind(names_to = "measure_name") %>%
       dplyr::relocate(var_name, measure_name) %>%
       dplyr::arrange(var_name);
-    df_summary <- list_summary;
+
+    df_summary <- list_summary
+
   }
+
   return(df_summary)
+
 }
 
 
