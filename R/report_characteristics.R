@@ -173,6 +173,7 @@ report_characteristics <- function(d,
 
   }
 
+## Configure outcome based based on null status of cat.cols and num.cols
 
     if (!is.null(cat.cols) & !is.null(num.cols)) {
 
@@ -196,18 +197,29 @@ report_characteristics <- function(d,
 
     }
 
+## Configure total.row summary
+
   if (format==TRUE & total.row==TRUE) {
 
     total_all <- c("records_count", "count_percent_total", paste0(prettyNum(nrow(d), big.mark=","), " (", sprintf(paste0("%.",round.percent,"f"), 100*nrow(d)/nrow(d)),")"))
 
     if (!is.null(group)) {
 
-      count_groups <- table(d[,group])
+      if (total.column==FALSE) {
+
+        total_all <- c("records_count", "count_percent_total")
+
+      }
+
+      count_groups <- table(d[,group]) %>% as.data.frame()
+      names(count_groups) = c("var_levels", "frequency")
+      dplyr::filter(!var_levels %in% group.exclude.levels) %>% dplyr::select(frequency) %>% dplyr::pull()
       percent_groups <- sapply(count_groups, FUN = function(x){paste0(prettyNum(x, big.mark=","), " (", sprintf(paste0("%.",round.percent,"f"), 100*x/nrow(d)),")") })
       total_all <- c(total_all, percent_groups)
 
     }
 
+    total_all <- total_all %>% t() %>% as.data.frame()
     names(total_all) <- names(df_summary)
     df_summary <- total_all %>% dplyr::bind_rows(df_summary)
 
