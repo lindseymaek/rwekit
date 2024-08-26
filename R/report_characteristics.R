@@ -13,6 +13,7 @@
 #' @param round.percent Integer count of decimal places to include in percentage reporting
 #' @param format Boolean: if TRUE (default) then a formatted character column is generated with both the count and percentage concatenated as: "count (percentage)"
 #' @param total.column Boolean: if TRUE, then statistics are reported for the total dataset in addition to the levels of group
+#' @param total.row Boolean: if TRUE, then count of records in each column is reported
 #' @param group.exclude.levels Vector with optional levels of group to exclude from report
 #' @param col.exclude.levels Vector with optional levels of variables in cols to exclude from report
 #' @param return.summaries Vector of formatted summary statistics: "count_percent", "mean_sd", "median_iqr", "median_minmax". All included by default.
@@ -76,6 +77,7 @@ report_characteristics <- function(d,
                                   round.percent = 0,
                                   format = TRUE,
                                   total.column = TRUE,
+                                  total.row = TRUE,
                                   group.exclude.levels = NULL,
                                   col.exclude.levels = NULL,
                                   return.summaries = c("count_percent", "mean_sd"),
@@ -165,10 +167,9 @@ report_characteristics <- function(d,
           dplyr::relocate(var_name, measure_name, value) %>%
           dplyr::rename("total"="value")
 
-
       }
 
-      }
+    }
 
   }
 
@@ -194,6 +195,23 @@ report_characteristics <- function(d,
       df_summary <- df_summary_num
 
     }
+
+  if (format==TRUE & total.row==TRUE) {
+
+    total_all <- c("records_count", "count_percent_total", paste0(prettyNum(nrow(d), big.mark=","), " (", sprintf(paste0("%.",round.percent,"f"), 100*nrow(d)/nrow(d)),")"))
+
+    if (!is.null(group)) {
+
+      count_groups <- table(d[,group])
+      percent_groups <- sapply(count_groups, FUN = function(x){paste0(prettyNum(x, big.mark=","), " (", sprintf(paste0("%.",round.percent,"f"), 100*x/nrow(d)),")") })
+      total_all <- c(total_all, percent_groups)
+
+    }
+
+    names(total_all) <- names(df_summary)
+    df_summary <- total_all %>% dplyr::bind_rows(df_summary)
+
+  }
 
   return(df_summary)
 }
