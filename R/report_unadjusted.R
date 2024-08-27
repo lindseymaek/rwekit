@@ -26,7 +26,7 @@
 report_unadjusted <- function(d,
                               model.method = c("glm_binomial", "glm_gaussian", "survival_coxph"),
                               outcome.var,
-                              time.var,
+                              time.var = NULL,
                               model.vars,
                               report.inverse = NULL,
                               round.estimate = 2,
@@ -35,6 +35,10 @@ report_unadjusted <- function(d,
                               verbose = TRUE,
                               conf.level = 0.95
                               ) {
+
+  checkmate::assert_choice(model.method, c("glm_binomial", "glm_gaussian", "survival_coxph"))
+  checkmate::assert_int(round.estimate)
+  checkmate::assert_choice(p.round.method, c(1,2))
 
   model.vars = as.list(model.vars);
 

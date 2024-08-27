@@ -83,6 +83,9 @@ report_characteristics <- function(d,
                                   return.summaries = c("count_percent", "mean_sd"),
                                   return.summaries.bycol = NULL) {
 
+  checkmate::assert_int(round.percent)
+  checkmate::assert_choice(model.method, c("count_percent", "mean_sd", "median_iqr", "median_minmax"))
+
   if (is.null(cat.cols) & is.null(num.cols)) {
 
       cat.cols <- d %>% dplyr::select_if(function(x) is.character(x) | is.factor(x)) %>% colnames()
@@ -173,7 +176,6 @@ report_characteristics <- function(d,
 
   }
 
-## Configure outcome based based on null status of cat.cols and num.cols
 
     if (!is.null(cat.cols) & !is.null(num.cols)) {
 
@@ -197,7 +199,6 @@ report_characteristics <- function(d,
 
     }
 
-## Configure total.row summary
 
   if (format==TRUE & total.row==TRUE) {
 
@@ -213,7 +214,7 @@ report_characteristics <- function(d,
 
       count_groups <- table(d[,group]) %>% as.data.frame()
       names(count_groups) = c("var_levels", "frequency")
-      dplyr::filter(!var_levels %in% group.exclude.levels) %>% dplyr::select(frequency) %>% dplyr::pull()
+      count_groups <- count_groups %>% dplyr::filter(!var_levels %in% group.exclude.levels) %>% dplyr::select(frequency) %>% dplyr::pull()
       percent_groups <- sapply(count_groups, FUN = function(x){paste0(prettyNum(x, big.mark=","), " (", sprintf(paste0("%.",round.percent,"f"), 100*x/nrow(d)),")") })
       total_all <- c(total_all, percent_groups)
 

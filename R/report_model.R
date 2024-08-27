@@ -47,7 +47,7 @@
 #'                                            TRUE ~ "D"))
 #'
 #' # fit CoxPH model
-#' surv_mod = survival::coxph(survival::Surv(event = outcome_flag, time = numeric_var1) ~ binary_var + cat_var + numeric_var2,
+#' surv_mod=coxph(Surv(event=outcome_flag, time=numeric_var1) ~ binary_var+cat_var+numeric_var2,
 #' data = sample_data)
 #'
 #' # simple formatted model reporting
@@ -84,6 +84,10 @@ report_model = function(x,
                         p.round.method = 1,
                         p.lead.zero = TRUE,
                         conf.level = 0.95) {
+
+  checkmate::assert_character(outcome.var)
+  checkmate::assert_int(round.percent)
+  checkmate::assert_choice(p.round.method, c(1,2))
 
 # report outcome frequency
 if (!is.null(outcome.var) & !is.null(d)) {
