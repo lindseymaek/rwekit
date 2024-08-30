@@ -5,15 +5,13 @@
 #' @param x A model object
 #' @param outcome.var A string containing the name of the outcome variable, for models with binomial outcomes only. If provided with d, the frequency of the outcome for the levels of each factor variable will be reported.
 #' @param d The dataframe used to fit the model object, x.
-#' @param factor.vars A vector of strings containing the names of independent model variables to be considered as factors for the reporting of outcome.var.
 #' @param variable.labels A dataframe with the variable labels to be used to annotate and order variables in the model summary output. See Details.
 #' @param report.inverse A vector of strings containing the names of independent model variables for which the inverse of the estimate is desired for reporting.
 #' @param round.percent An integer representing the number of places to which the percent of the outcome should be rounded if ratio.include.percent=TRUE
 #' @param round.estimate An integer representing the number of places to which the model estimate and confidence intervals are rounded.
 #' @param ratio.include.percent Report the percent of the outcome frequency. Default is FALSE.
-#' @param verbose See messages about model outputs. Default is TRUE
-#' @param p.round.method integer corresponding to desired rounding convention. See Details.
-#' @param p.lead.zero if FALSE, no 0 will be reported in the place before the decimal. Defaults to TRUE.
+#' @param p.round.method An integer corresponding to desired rounding convention. See Details.
+#' @param p.lead.zero Boolean: if FALSE, no 0 will be reported in the place before the decimal. Defaults to TRUE.
 #' @param conf.level The confidence level for the intervals passed to tidy() from the broom package. Default = 0.95
 #'
 #' @return A dataframe with an labeled model summary
@@ -74,29 +72,30 @@
 report_model = function(x,
                         outcome.var = NULL,
                         d = NULL,
-                        factor.vars = NULL,
                         variable.labels = NULL,
                         report.inverse = NULL,
                         round.percent = 0,
                         round.estimate = 2,
                         ratio.include.percent = FALSE,
-                        verbose = TRUE,
                         p.round.method = 1,
                         p.lead.zero = TRUE,
                         conf.level = 0.95) {
 
-  checkmate::assert_character(outcome.var)
   checkmate::assert_int(round.percent)
   checkmate::assert_choice(p.round.method, c(1,2))
 
 # report outcome frequency
 if (!is.null(outcome.var) & !is.null(d)) {
 
+  checkmate::assert_character(outcome.var)
+
   outcome_levels <- d %>% dplyr::select(dplyr::all_of(outcome.var)) %>% dplyr::pull() %>% unique()
 
-  if (length(outcome_levels) > 2 & verbose == TRUE) {
-    warning("outcome.var must be the name of a binary column in d")
-  }
+  # if (length(outcome_levels) > 2 & verbose == TRUE) {
+  #   warning("outcome.var must be the name of a binary column in d")
+  # }
+
+  checkmate::assert_vector(outcome_levels, max.len = 2, min.len = 2)
 
   # vector of modeling variables is extracted from the formula instead of the model object
   mod_vars <- stringr::str_split(as.character(x[["terms"]][[3]]), pattern=stringr::fixed("+")) %>%
@@ -104,15 +103,13 @@ if (!is.null(outcome.var) & !is.null(d)) {
     stringr::str_subset(".+") %>%
     trimws()
 
-  # unless specified, data type is identified from the input dataframe
-  if (is.null(factor.vars)) {
+  # data type is identified from the input dataframe
 
-    d_fc_vars <- d %>% dplyr::select_if(function(x) is.character(x) | is.factor(x)) %>% colnames()
-    factor.vars <- mod_vars[mod_vars %in% d_fc_vars]
+  d_fc_vars <- d %>% dplyr::select_if(function(x) is.character(x) | is.factor(x)) %>% colnames()
 
-  }
+  factor.vars <- mod_vars[mod_vars %in% d_fc_vars]
 
-  fc_vars_minlevels <- lapply(factor.vars, function(x) {d %>% dplyr::select(x) %>% unique() %>% dplyr::pull() %>% as.character() %>% min(na.rm=TRUE)})
+  fc_vars_minlevels <- lapply(factor.vars, function(x) {d %>% dplyr::select(dplyr::all_of(x)) %>% unique() %>% dplyr::pull() %>% as.character() %>% min(na.rm=TRUE)})
 
 
   ratio_df <- purrr::map2(factor.vars,fc_vars_minlevels, function(x,y) report_frequency(d,
@@ -153,12 +150,6 @@ if (!is.null(outcome.var) & !is.null(d)) {
     }
 
   if (!is.null(report.inverse)) {
-
-    if (verbose==TRUE) {
-
-      warning("report.inverse is not null, check that variable.labels been updated to reflect the reported inverse values.")
-
-    }
 
     tidy_mod <- tidy_mod %>%
       dplyr::mutate(estimate.inverse = 1 / estimate,
@@ -211,30 +202,19 @@ if (!is.null(outcome.var) & !is.null(d)) {
   # add labels
   if (!is.null(variable.labels)) {
 
-    if (is.data.frame(variable.labels) & ncol(variable.labels)==2) {
+    checkmate::assert_data_frame(variable.labels, max.cols = 2, min.cols = 2)
 
-      names(variable.labels) = c("variables","variable_labels")
-
-    } else {
-
-      warning("variable.labels must be a dataframe with two columns: first, a column containing the names of each term in the model
-              (set variable.labels = NULL to view the expected terms in the output) and second, a column containing the desired label text.")
-
-    }
+    names(variable.labels) <- c("variables","variable_labels")
 
     tidy_mod <- variable.labels %>%
       dplyr::left_join(tidy_mod, by = c("variables" = "term")) %>%
       dplyr::relocate(variable_labels) %>%
       dplyr::relocate(variables, .after = p_round)
 
+    # warn user if joining labels results in missing estimates
+    checkmate::check_double(tidy_mod$estimate_CI, any.missing = FALSE)
+
     if (sum(is.na(tidy_mod$estimate_CI)) > 0) {
-
-      if (verbose==TRUE) {
-
-      warning("Join resulted in missing data: either additional terms were specified in variable.labels, or variables in the first column did not match model terms exactly.
-              variable.labels must be a dataframe with two columns: first, a column containing the names of each term in the model
-              (set variable.labels = NULL to view the expected terms in the output) and second, a column containing the desired label text.")
-      }
 
       tidy_mod <- tidy_mod %>%
         dplyr::filter(!is.na(estimate_CI))
@@ -248,6 +228,7 @@ if (!is.null(outcome.var) & !is.null(d)) {
       dplyr::select(-outcome_freq_comparison, -outcome_freq_reference)
 
   }
+
     return(tidy_mod)
 
 }
