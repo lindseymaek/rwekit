@@ -84,7 +84,7 @@ report_characteristics <- function(d,
                                   return.summaries.bycol = NULL) {
 
   checkmate::assert_int(round.percent)
-  lapply(return.summaries, function(x){checkmate::assert_choice(x, c("count_percent", "mean_sd", "median_iqr", "median_minmax"))})
+  checkmate::assert_choice(length(round.places), c(1,length(num.cols)))
 
   if (is.null(cat.cols) & is.null(num.cols)) {
 
@@ -92,17 +92,22 @@ report_characteristics <- function(d,
       num.cols <- d %>% dplyr::select_if(is.numeric) %>% colnames()
 
       if (length(cat.cols)==0) {
+
         cat.cols <- NULL
+
       }
 
       if (length(num.cols)==0) {
+
         num.cols <- NULL
+
       }
 
   }
 
 
   if (!is.null(cat.cols)) {
+
     df_summary_cat <- report_frequency(d,
                                       cols=cat.cols,
                                       group,
@@ -141,15 +146,24 @@ report_characteristics <- function(d,
 
    if (!is.null(num.cols)) {
 
-    df_summary_num <- report_numuniv(d,
-                                    cols=num.cols,
-                                    group,
-                                    round.places,
-                                    round.percent,
-                                    format,
-                                    group.exclude.levels,
-                                    return.summaries,
-                                    return.summaries.bycol)
+     lapply(return.summaries, function(x){checkmate::assert_choice(x, c("count_percent", "mean_sd", "median_iqr", "median_minmax"))})
+
+     if (!is.null(return.summaries)) {
+
+       checkmate::assert_list(return.summaries.bycol, len = length(return.summaries), null.ok = TRUE)
+       lapply(return.summaries.bycol, function(x){checkmate::assert_vector(x, len = length(num.cols))})
+
+     }
+
+     df_summary_num <- report_numuniv(d,
+                                      cols=num.cols,
+                                      group,
+                                      round.places,
+                                      round.percent,
+                                      format,
+                                      group.exclude.levels,
+                                      return.summaries,
+                                      return.summaries.bycol)
 
     if (!is.null(group) & total.column == TRUE) {
 
@@ -175,7 +189,6 @@ report_characteristics <- function(d,
     }
 
   }
-
 
     if (!is.null(cat.cols) & !is.null(num.cols)) {
 

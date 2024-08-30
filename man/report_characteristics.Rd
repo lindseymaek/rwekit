@@ -13,6 +13,7 @@ report_characteristics(
   round.percent = 0,
   format = TRUE,
   total.column = TRUE,
+  total.row = TRUE,
   group.exclude.levels = NULL,
   col.exclude.levels = NULL,
   return.summaries = c("count_percent", "mean_sd"),
@@ -35,6 +36,8 @@ report_characteristics(
 \item{format}{Boolean: if TRUE (default) then a formatted character column is generated with both the count and percentage concatenated as: "count (percentage)"}
 
 \item{total.column}{Boolean: if TRUE, then statistics are reported for the total dataset in addition to the levels of group}
+
+\item{total.row}{Boolean: if TRUE, then count of records in each column is reported}
 
 \item{group.exclude.levels}{Vector with optional levels of group to exclude from report}
 
