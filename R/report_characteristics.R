@@ -84,7 +84,7 @@ report_characteristics <- function(d,
                                   return.summaries.bycol = NULL) {
 
   checkmate::assert_int(round.percent)
-  checkmate::assert_choice(model.method, c("count_percent", "mean_sd", "median_iqr", "median_minmax"))
+  lapply(return.summaries, function(x){checkmate::assert_choice(x, c("count_percent", "mean_sd", "median_iqr", "median_minmax"))})
 
   if (is.null(cat.cols) & is.null(num.cols)) {
 
