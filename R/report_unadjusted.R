@@ -42,30 +42,35 @@ report_unadjusted <- function(d,
 
   model.vars = as.list(model.vars);
 
-  if(model.method=="glm_gaussian") {
+  if (model.method=="glm_gaussian") {
 
     unadj.out <- lapply(model.vars,
-                        FUN = function(x) {broom::tidy(stats::glm(stats::as.formula(paste(outcome.var, "~",x)), data = d,family = "gaussian"), exponentiate = TRUE, conf.int = TRUE, conf.level = conf.level)}) %>%
+                        FUN = function(x) {broom::tidy(stats::glm(stats::as.formula(paste(outcome.var, "~",x)), data = d,family = "gaussian"),
+                                                       exponentiate = TRUE, conf.int = TRUE, conf.level = conf.level)}) %>%
       dplyr::bind_rows() %>%
       dplyr::filter(term!= "(Intercept)")
 
-  } else if(model.method=="glm_binomial") {
+  } else if (model.method=="glm_binomial") {
 
     unadj.out <- lapply(model.vars,
-                        FUN = function(x) {broom::tidy(stats::glm(stats::as.formula(paste(outcome.var, "~",x)), data = d,family = "binomial"), exponentiate = TRUE, conf.int = TRUE, conf.level = conf.level)}) %>%
+                        FUN = function(x) {broom::tidy(stats::glm(stats::as.formula(paste(outcome.var, "~",x)), data = d,family = "binomial"),
+                                                       exponentiate = TRUE, conf.int = TRUE, conf.level = conf.level)}) %>%
       dplyr::bind_rows() %>%
       dplyr::filter(term!= "(Intercept)")
 
-  } else if(model.method=="survival_coxph") {
+  } else if (model.method=="survival_coxph") {
 
-    if(!is.null(id)) {
+    checkmate::assert_character(time.var)
+
+    if (!is.null(id)) {
 
       id <- d[[id]]
 
     }
 
     unadj.out <- lapply(model.vars,
-                        FUN = function(x) {broom::tidy(survival::coxph(stats::as.formula(paste("survival::Surv(time = ", time.var, ", event = ", outcome.var, ") ~", x)), data = d, id = id), exponentiate = TRUE, conf.int = TRUE, conf.level = conf.level)}) %>%
+                        FUN = function(x) {broom::tidy(survival::coxph(stats::as.formula(paste("survival::Surv(time = ", time.var, ", event = ", outcome.var, ") ~", x)), data = d, id = id),
+                                                       exponentiate = TRUE, conf.int = TRUE, conf.level = conf.level)}) %>%
       dplyr::bind_rows()
 
   }
