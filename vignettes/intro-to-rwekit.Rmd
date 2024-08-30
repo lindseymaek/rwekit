@@ -102,8 +102,6 @@ Variables selected for inclusion in the summary output can be specified directly
 report_characteristics(sample_data,
                       cat.cols = c("cat_var","binary_var", "outcome_flag"),
                       num.cols = c("numeric_var1", "numeric_var2"))
-
-
 ```
 
 
@@ -116,7 +114,6 @@ report_characteristics(sample_data,
                       cat.cols = c("cat_var","binary_var"),
                       num.cols = c("numeric_var1", "numeric_var2"),
                       group = "outcome_flag")
-
 ```
 
 ### Choose variable levels to report 
@@ -255,24 +252,16 @@ Referencing again the emphasis on RWE studies for this package, there are three 
 
 The outcome.var argument takes the dependent variable, where as the candidate predictors are supplied to the model.vars argument as a vector.
 
-Simple logistic regression for three variables in `sample_data` predicting "outcome_flag" is output below.
-
-```{r}
-report_unadjusted(sample_data,
-                  model = "glm_binomial",
-                  outcome.var = "outcome_flag",
-                  model.vars = c("cat_var", "binary_var", "numeric_var1")
-                  )
-```
-
-For Cox proportional hazards models, the time.var argument should also be supplied.
+Simple Cox proportional hazards regression for three variables in `sample_data` predicting "outcome_flag" is output below.
+Unlike for glm methods, the time.var argument should also be supplied.
 
 ```{r}
 report_unadjusted(sample_data,
                   model.method = "survival_coxph",
                   outcome.var = "outcome_flag",
                   time.var = "numeric_var1",
-                  model.vars = c("cat_var", "binary_var", "numeric_var2")
+                  model.vars = c("cat_var", "binary_var", "numeric_var2"),
+                  conf.level = 0.95
                   )
 ```
 
@@ -280,7 +269,7 @@ report_unadjusted(sample_data,
 
 The inverse of an estimate will be reported if the model term is supplied to the report.inverse argument, which accepts a vector of model terms. 
 
-Users are warned that the reported levels of the output terms are not changed to reflect the new reported levels of variables for which the inverse is reported. When verbose is set to TRUE, a warning reminder of this will be thrown any time the report.inverse argument is not NULL.
+Users are warned that the reported levels of the output terms are not changed to reflect the new reported levels of variables for which the inverse is reported. 
 
 Below, the binary variable is reported with the positive class as the reference, instead of the negative class.
 
@@ -290,7 +279,8 @@ report_unadjusted(sample_data,
                   outcome.var = "outcome_flag",
                   time.var = "numeric_var1",
                   model.vars = c("cat_var", "binary_var", "numeric_var2"),
-                  report.inverse = "binary_var1"
+                  report.inverse = "binary_var1",
+                  conf.level = 0.95
                   )
 ```
 
@@ -347,8 +337,7 @@ Alternatively, modeling variables that are factors to be reported for the outcom
 report_model(surv_mod, 
              variable.labels = mod_labels,
              outcome.var = "outcome_flag",
-             d = sample_data,
-             factor.vars = c("binary_var", "cat_var"))
+             d = sample_data)
 ```
 
 
@@ -368,7 +357,7 @@ report_model(surv_mod,
 
 The inverse of an estimate will be reported if the model term is supplied to the report.inverse argument, which accepts a vector of model terms. 
 
-Users are strongly encouraged to double check supplied labels to ensure that the interpretation is correct. For factors with more than two levels, advise to refit the model object. When verbose is set to TRUE, a warning reminder of this will be thrown any time the report.inverse argument is not NULL.
+Users are strongly encouraged to double check supplied labels to ensure that the interpretation is correct. For factors with more than two levels, advise to refit the model object.
 
 Below, the binary variable is reported with the positive class as the reference, instead of the negative class.
 Note that the frequency distributions have been flipped accordingly, compared to the previous output.
@@ -388,7 +377,6 @@ report_model(surv_mod,
 ```
 
 The complete output of the tidy model object is included for the user's reference, but it can be easily cleaned up for reporting purposes:
-
 
 ```{r}
 report_model(surv_mod, 
