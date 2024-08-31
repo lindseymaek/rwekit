@@ -165,12 +165,19 @@ if (!is.null(outcome.var) & !is.null(d)) {
         dplyr::mutate(outcome_freq_reference = ifelse(term %in% report.inverse, comparison_level, reference_level),
                   outcome_freq_comparison = ifelse(term %in% report.inverse, reference_level, comparison_level))
 
+    } else {
+
+      tidy_mod <- tidy_mod %>%
+        dplyr::mutate(outcome_freq_reference = NA,
+                      outcome_freq_comparison = NA)
+
     }
   } else {
 
     tidy_mod <- tidy_mod %>%
       dplyr::rename("conf_low"="conf.low",
                     "conf_high"="conf.high")
+
 
     if (!is.null(outcome.var)) {
 
@@ -184,7 +191,9 @@ if (!is.null(outcome.var) & !is.null(d)) {
         dplyr::mutate(outcome_freq_reference = NA,
                       outcome_freq_comparison = NA)
     }
+
   }
+
 
   tidy_mod <- tidy_mod %>%
     dplyr::mutate(p_round = format_pvalues(p.value,
