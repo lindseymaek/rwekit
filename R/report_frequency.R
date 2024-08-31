@@ -19,6 +19,7 @@ report_frequency = function(d,
                             cols,
                             group = NULL,
                             round.percent = 0,
+                            percent.symbol = FALSE,
                             format = TRUE,
                             group.exclude.levels = NULL,
                             col.exclude.levels = NULL) {
@@ -39,8 +40,10 @@ report_frequency = function(d,
 
   if (format==TRUE) {
 
+    sym <- ifelse(percent.symbol == TRUE, "%", "")
+
     df_format <- df_comp %>%
-      dplyr::mutate(count_percent = paste0(prettyNum(frequency, big.mark = ",", scientific = FALSE), " (", percent, ")"),
+      dplyr::mutate(count_percent = paste0(prettyNum(frequency, big.mark = ",", scientific = FALSE), " (", percent, sym, ")"),
                     measure_name = "count_percent") %>%
       dplyr::filter(!var_levels %in% col.exclude.levels) %>%
       dplyr::mutate(var_name = paste0(var_name, var_levels)) %>%

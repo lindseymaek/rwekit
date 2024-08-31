@@ -27,6 +27,7 @@ report_numuniv <- function(d,
                            group = NULL,
                            round.places = 1,
                            round.percent = 1,
+                           percent.symbol = FALSE,
                            format = TRUE,
                            group.exclude.levels = NULL,
                            return.summaries,
@@ -57,8 +58,11 @@ report_numuniv <- function(d,
   }
 
   if (format == TRUE){
+
+    sym <- ifelse(percent.symbol == TRUE, "%", "")
+
     df_summary <- df_summary %>%
-      dplyr::mutate(count_percent = paste0(prettyNum(count, big.mark = ",", scientific = FALSE), " (", sprintf(paste0("%.",round.percent,"f"), percent), ")"),
+      dplyr::mutate(count_percent = paste0(prettyNum(count, big.mark = ",", scientific = FALSE), " (", sprintf(paste0("%.",round.percent,"f"), percent), sym, ")"),
                     mean_sd = paste0(prettyNum(mean, big.mark = ",", scientific = FALSE), ", ", stdev),
                     median_iqr = paste0(prettyNum(median, big.mark = ",", scientific = FALSE), " (", q.25, ", ", q.75, ")"),
                     median_minmax = paste0(prettyNum(median, big.mark = ",", scientific = FALSE), " (", min, ", ", max, ")"))

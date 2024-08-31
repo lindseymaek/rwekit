@@ -11,6 +11,7 @@
 #' @param group Optional column name to stratify by
 #' @param round.places Integer count of decimal places to include in summary statistic reporting, or an integer vector of length(cols) with the count of decimal places to be reported for each corresponding col
 #' @param round.percent Integer count of decimal places to include in percentage reporting
+#' @param percent.symbol Boolean: if TRUE then the % is included with percentage reporting
 #' @param format Boolean: if TRUE (default) then a formatted character column is generated with both the count and percentage concatenated as: "count (percentage)"
 #' @param total.column Boolean: if TRUE, then statistics are reported for the total dataset in addition to the levels of group
 #' @param total.row Boolean: if TRUE, then count of records in each column is reported
@@ -75,6 +76,7 @@ report_characteristics <- function(d,
                                   group = NULL,
                                   round.places = 1,
                                   round.percent = 0,
+                                  percent.symbol = FALSE,
                                   format = TRUE,
                                   total.column = TRUE,
                                   total.row = TRUE,
@@ -112,6 +114,7 @@ report_characteristics <- function(d,
                                       cols=cat.cols,
                                       group,
                                       round.percent,
+                                      percent.symbol,
                                       format,
                                       group.exclude.levels,
                                       col.exclude.levels)
@@ -124,6 +127,7 @@ report_characteristics <- function(d,
                                               cols=cat.cols,
                                               group=NULL,
                                               round.percent,
+                                              percent.symbol,
                                               format,
                                               group.exclude.levels,
                                               col.exclude.levels)
@@ -160,6 +164,7 @@ report_characteristics <- function(d,
                                       group,
                                       round.places,
                                       round.percent,
+                                      percent.symbol,
                                       format,
                                       group.exclude.levels,
                                       return.summaries,
@@ -172,6 +177,7 @@ report_characteristics <- function(d,
                                          group=NULL,
                                          round.places,
                                          round.percent,
+                                         percent.symbol,
                                          format,
                                          group.exclude.levels,
                                          return.summaries,
