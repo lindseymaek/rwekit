@@ -17,7 +17,6 @@ knitr::opts_chunk$set(
 # rwekit
 
 
-
 <!-- badges: start -->
 ![rwekit logo](https://github.com/lindseymaek/rwekit/blob/main/man/figures/logo.png)
 <!-- badges: end -->
@@ -39,10 +38,9 @@ Examples are worked on randomly generated data used to simulate a patient cohort
 
 ```{r example, message=FALSE, warning=FALSE, echo=TRUE}
 library(rwekit)
-library(dplyr)
-library(magrittr)
-library(knitr)
+library(tidyverse)
 library(kableExtra)
+library(forestplot)
 
 # simulate patient data
 size = 2500
@@ -61,11 +59,11 @@ sample_data = as.data.frame(patient_id) %>%
 ```
 
 
-Use `report_characteristics()` to create Table 1 (cohort description table) for `sample_data`.
+Use `report_characteristics()` to stage data for Table 1 (cohort description table) for `sample_data`.
 
 
 ```{r}
-report_characteristics(sample_data,
+tbl1 <- report_characteristics(sample_data,
                       cat.cols = c("binary_var","cat_var"),
                       num.cols = c("numeric_var1", "numeric_var2"),
                       group = "outcome_flag",
@@ -76,12 +74,21 @@ report_characteristics(sample_data,
                       return.summaries.bycol = list(c(TRUE, TRUE), # count_percent
                                                     c(FALSE, TRUE), # mean_sd
                                                     c(TRUE, FALSE)) # median_iqr
-                      ) %>% 
+                      )
+
+print(tbl1)
+```
+
+`report_characteristics()` pairs easily with user's preferred workflows for formatting, as in this example using knitr with kableExtra: 
+
+```{r, echo=FALSE}
+tbl1 %>%
   kable(format="markdown",
         col.names = c("Variables", "Summary measure", " Total", "Patients without outcome", "Patients with outcome"),
         caption = "Example Table 1. Summary measures reported for sample_data overall and by the value of outcome_flag",
         align = "llccc") %>%
-  kable_styling(latex_options = "striped")
+  kable_styling(latex_options = "striped",
+                font_size = 11)
 ```
 
 ## Model Reporting Example
@@ -97,17 +104,52 @@ mod_labels = data.frame(vars = c( "cat_varB", "cat_varC", "binary_var1", "numeri
                 labs = c("Categorical variable B (Reference A)", "Categorical variable C (Reference A)","Binary variable (Reference negative class)","Uniform continuous variable"))
 
 # annotate models
-report_model(surv_mod, 
-             variable.labels = mod_labels,
-             outcome.var = "outcome_flag",
-             d = sample_data,
-             ratio.include.percent = TRUE) %>% 
-  select(variable_labels, outcome_freq_comparison, outcome_freq_reference, estimate_CI, p_round) %>%
-  knitr::kable(format="markdown",
-               col.names = c("Variable", "Comparison level", "Reference level", "Estimate (95% CI)", "P"),
-               caption = "Example table reporting survival model summary",
-               align = "lcccc") %>%
-  add_header_above(c(" " = 1, "Frequency of outcome" = 2, " " = 2)) %>%
-  kable_styling(latex_options = "striped")
+mod_report = report_model(surv_mod, 
+                          variable.labels = mod_labels,
+                          outcome.var = "outcome_flag",
+                          d = sample_data,
+                          ratio.include.percent = TRUE) 
+
+print(mod_report)
+```
+
+`report_model()` pairs easily with user's preferred workflows for formatting, as in this example using forestplot: 
+
+```{r, echo=FALSE, out.height=4, out.width=6}
+plot_labels = c("Variables", "Comparison", "Reference", "HR (95% CI)", "P")
+fp_label = as.data.frame(rbind(plot_labels,
+  mod_report[, c("variable_labels", "outcome_freq_comparison", "outcome_freq_reference", "estimate_CI", "p_round")]))
+fp_data = rbind(NA, mod_report)
+
+ticks = c(seq(0.01, 0.09, 0.01), seq(0.1, 1, 0.1), seq(2, 10, 1))
+ticks = sapply(ticks, log)
+ticks_label = c(TRUE, rep(FALSE,8), TRUE, rep(FALSE,8), TRUE, rep(FALSE,8), TRUE)
+attr(ticks, "labels") = ticks_label
+
+forestplot(fp_data,
+           mean = estimate,
+           lower = conf_low,
+           upper = conf_high,
+           graph.pos = 4,
+           labeltext = fp_label,
+           is.summary = c(TRUE, rep(FALSE,5)),
+           xticks = ticks,
+           xlog = TRUE,
+           lineheight = unit(0.75, "cm"),
+           hrzl_lines = gpar(col = "black"),
+           txt_gp = fpTxtGp(
+             label = gpar(cex = 1),
+             title = gpar(cex = 1.1),
+             xlab = gpar(cex = 1),
+             summary = gpar(cex = 1.1),
+             ticks = gpar(cex = 0.9)),
+           xlab = "HR (95% CI)",
+           title = "Example Figure. Model summary",
+           ci.vertices = FALSE,
+           boxsize = 0.1,
+           fn.ci_norm = fpDrawCircleCI)
+
+
+
 ```
 

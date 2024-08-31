@@ -28,10 +28,9 @@ patient cohort with a set of attributes and a binary outcome.
 
 ``` r
 library(rwekit)
-library(dplyr)
-library(magrittr)
-library(knitr)
+library(tidyverse)
 library(kableExtra)
+library(forestplot)
 
 # simulate patient data
 size = 2500
@@ -49,11 +48,11 @@ sample_data = as.data.frame(patient_id) %>%
                                           TRUE ~ NA))
 ```
 
-Use `report_characteristics()` to create Table 1 (cohort description
-table) for `sample_data`.
+Use `report_characteristics()` to stage data for Table 1 (cohort
+description table) for `sample_data`.
 
 ``` r
-report_characteristics(sample_data,
+tbl1 <- report_characteristics(sample_data,
                       cat.cols = c("binary_var","cat_var"),
                       num.cols = c("numeric_var1", "numeric_var2"),
                       group = "outcome_flag",
@@ -64,16 +63,27 @@ report_characteristics(sample_data,
                       return.summaries.bycol = list(c(TRUE, TRUE), # count_percent
                                                     c(FALSE, TRUE), # mean_sd
                                                     c(TRUE, FALSE)) # median_iqr
-                      ) %>% 
-  kable(format="markdown",
-        col.names = c("Variables", "Summary measure", " Total", "Patients without outcome", "Patients with outcome"),
-        caption = "Example Table 1. Summary measures reported for sample_data overall and by the value of outcome_flag",
-        align = "llccc") %>%
-  kable_styling(latex_options = "striped")
+                      )
+
+print(tbl1)
+#>         var_name        measure_name         total outcome_flag0 outcome_flag1
+#> 1  records_count count_percent_total 2,500 (100.0)  2,267 (90.7)     233 (9.3)
+#> 2    binary_var1       count_percent  1,763 (70.5)  1,597 (70.4)    166 (71.2)
+#> 3       cat_varA       count_percent    304 (12.2)    279 (12.3)     25 (10.7)
+#> 4       cat_varB       count_percent    948 (37.9)    859 (37.9)     89 (38.2)
+#> 5       cat_varC       count_percent    928 (37.1)    844 (37.2)     84 (36.1)
+#> 6      cat_varNA       count_percent    320 (12.8)    285 (12.6)     35 (15.0)
+#> 7   numeric_var1       count_percent 2,500 (100.0) 2,267 (100.0)   233 (100.0)
+#> 8   numeric_var1          median_iqr      2 (1, 4)      2 (1, 3)      4 (3, 6)
+#> 9   numeric_var2       count_percent 2,500 (100.0) 2,267 (100.0)   233 (100.0)
+#> 10  numeric_var2             mean_sd    0.50, 0.29    0.50, 0.29    0.51, 0.28
 ```
 
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<caption>
+`report_characteristics()` pairs easily with user’s preferred workflows
+for formatting, as in this example using knitr with kableExtra:
+
+<table class="table" style="font-size: 11px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
 Example Table 1. Summary measures reported for sample_data overall and
 by the value of outcome_flag
 </caption>
@@ -99,19 +109,36 @@ Patients with outcome
 <tbody>
 <tr>
 <td style="text-align:left;">
+records_count
+</td>
+<td style="text-align:left;">
+count_percent_total
+</td>
+<td style="text-align:center;">
+2,500 (100.0)
+</td>
+<td style="text-align:center;">
+2,267 (90.7)
+</td>
+<td style="text-align:center;">
+233 (9.3)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 binary_var1
 </td>
 <td style="text-align:left;">
 count_percent
 </td>
 <td style="text-align:center;">
-1,734 (69.4)
+1,763 (70.5)
 </td>
 <td style="text-align:center;">
-1,566 (69.6)
+1,597 (70.4)
 </td>
 <td style="text-align:center;">
-168 (67.2)
+166 (71.2)
 </td>
 </tr>
 <tr>
@@ -122,13 +149,13 @@ cat_varA
 count_percent
 </td>
 <td style="text-align:center;">
-326 (13.0)
+304 (12.2)
 </td>
 <td style="text-align:center;">
-296 (13.2)
+279 (12.3)
 </td>
 <td style="text-align:center;">
-30 (12.0)
+25 (10.7)
 </td>
 </tr>
 <tr>
@@ -139,13 +166,13 @@ cat_varB
 count_percent
 </td>
 <td style="text-align:center;">
-945 (37.8)
+948 (37.9)
 </td>
 <td style="text-align:center;">
-854 (38.0)
+859 (37.9)
 </td>
 <td style="text-align:center;">
-91 (36.4)
+89 (38.2)
 </td>
 </tr>
 <tr>
@@ -156,13 +183,13 @@ cat_varC
 count_percent
 </td>
 <td style="text-align:center;">
-925 (37.0)
+928 (37.1)
 </td>
 <td style="text-align:center;">
-827 (36.8)
+844 (37.2)
 </td>
 <td style="text-align:center;">
-98 (39.2)
+84 (36.1)
 </td>
 </tr>
 <tr>
@@ -173,13 +200,13 @@ cat_varNA
 count_percent
 </td>
 <td style="text-align:center;">
-304 (12.2)
+320 (12.8)
 </td>
 <td style="text-align:center;">
-273 (12.1)
+285 (12.6)
 </td>
 <td style="text-align:center;">
-31 (12.4)
+35 (15.0)
 </td>
 </tr>
 <tr>
@@ -193,10 +220,10 @@ count_percent
 2,500 (100.0)
 </td>
 <td style="text-align:center;">
-2,250 (100.0)
+2,267 (100.0)
 </td>
 <td style="text-align:center;">
-250 (100.0)
+233 (100.0)
 </td>
 </tr>
 <tr>
@@ -213,7 +240,7 @@ median_iqr
 2 (1, 3)
 </td>
 <td style="text-align:center;">
-4 (3, 7)
+4 (3, 6)
 </td>
 </tr>
 <tr>
@@ -227,10 +254,10 @@ count_percent
 2,500 (100.0)
 </td>
 <td style="text-align:center;">
-2,250 (100.0)
+2,267 (100.0)
 </td>
 <td style="text-align:center;">
-250 (100.0)
+233 (100.0)
 </td>
 </tr>
 <tr>
@@ -241,10 +268,10 @@ numeric_var2
 mean_sd
 </td>
 <td style="text-align:center;">
-0.49, 0.29
+0.50, 0.29
 </td>
 <td style="text-align:center;">
-0.49, 0.29
+0.50, 0.29
 </td>
 <td style="text-align:center;">
 0.51, 0.28
@@ -268,126 +295,31 @@ mod_labels = data.frame(vars = c( "cat_varB", "cat_varC", "binary_var1", "numeri
                 labs = c("Categorical variable B (Reference A)", "Categorical variable C (Reference A)","Binary variable (Reference negative class)","Uniform continuous variable"))
 
 # annotate models
-report_model(surv_mod, 
-             variable.labels = mod_labels,
-             outcome.var = "outcome_flag",
-             d = sample_data,
-             ratio.include.percent = TRUE) %>% 
-  select(variable_labels, outcome_freq_comparison, outcome_freq_reference, estimate_CI, p_round) %>%
-  knitr::kable(format="markdown",
-               col.names = c("Variable", "Comparison level", "Reference level", "Estimate (95% CI)", "P"),
-               caption = "Example table reporting survival model summary",
-               align = "lcccc") %>%
-  add_header_above(c(" " = 1, "Frequency of outcome" = 2, " " = 2)) %>%
-  kable_styling(latex_options = "striped")
+mod_report = report_model(surv_mod, 
+                          variable.labels = mod_labels,
+                          outcome.var = "outcome_flag",
+                          d = sample_data,
+                          ratio.include.percent = TRUE) 
+
+print(mod_report)
+#>                              variable_labels outcome_freq_comparison
+#> 1       Categorical variable B (Reference A)             89/948 (9%)
+#> 2       Categorical variable C (Reference A)             84/928 (9%)
+#> 3 Binary variable (Reference negative class)          166/1,763 (9%)
+#> 4                Uniform continuous variable                       -
+#>   outcome_freq_reference      estimate_CI p_round    variables  estimate
+#> 1            25/304 (8%) 1.00 (0.64-1.56)    0.99     cat_varB 0.9982981
+#> 2            25/304 (8%) 1.13 (0.72-1.77)    0.60     cat_varC 1.1285439
+#> 3            67/737 (9%) 0.88 (0.65-1.20)    0.43  binary_var1 0.8818705
+#> 4                      - 0.06 (0.03-0.10)  <0.001 numeric_var2 0.0582989
+#>   std.error     statistic      p.value   conf_low conf_high
+#> 1 0.2282691  -0.007461961 9.940463e-01 0.63820070 1.5615764
+#> 2 0.2282406   0.529827839 5.962313e-01 0.72150559 1.7652135
+#> 3 0.1580705  -0.795278186 4.264517e-01 0.64692655 1.2021390
+#> 4 0.2755473 -10.314644567 6.050477e-25 0.03397145 0.1000476
 ```
 
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<caption>
-Example table reporting survival model summary
-</caption>
-<thead>
-<tr>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+`report_model()` pairs easily with user’s preferred workflows for
+formatting, as in this example using forestplot:
 
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-
-Frequency of outcome
-
-</div>
-
-</th>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="2">
-</th>
-</tr>
-<tr>
-<th style="text-align:left;">
-Variable
-</th>
-<th style="text-align:center;">
-Comparison level
-</th>
-<th style="text-align:center;">
-Reference level
-</th>
-<th style="text-align:center;">
-Estimate (95% CI)
-</th>
-<th style="text-align:center;">
-P
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-Categorical variable B (Reference A)
-</td>
-<td style="text-align:center;">
-91/945 (10%)
-</td>
-<td style="text-align:center;">
-30/326 (9%)
-</td>
-<td style="text-align:center;">
-0.93 (0.61-1.41)
-</td>
-<td style="text-align:center;">
-0.72
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Categorical variable C (Reference A)
-</td>
-<td style="text-align:center;">
-98/925 (11%)
-</td>
-<td style="text-align:center;">
-30/326 (9%)
-</td>
-<td style="text-align:center;">
-1.10 (0.73-1.66)
-</td>
-<td style="text-align:center;">
-0.65
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Binary variable (Reference negative class)
-</td>
-<td style="text-align:center;">
-168/1,734 (10%)
-</td>
-<td style="text-align:center;">
-82/766 (11%)
-</td>
-<td style="text-align:center;">
-0.86 (0.65-1.15)
-</td>
-<td style="text-align:center;">
-0.31
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Uniform continuous variable
-</td>
-<td style="text-align:center;">
-
-- </td>
-  <td style="text-align:center;">
-
-  - </td>
-    <td style="text-align:center;">
-    0.06 (0.04-0.10)
-    </td>
-    <td style="text-align:center;">
-    \<0.001
-    </td>
-    </tr>
-    </tbody>
-    </table>
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="6" height="4" />
