@@ -426,3 +426,50 @@ test_that("No error thrown if return.summaries is not null and return.summaries.
                                          total.row = FALSE))
 })
 
+
+test_that("No error thrown if return.summaries is not null and return.summaries.bycol is null when group is not null", {
+  size = 2500
+  patient_id = sample(1:1000000,size)
+  sample_data = as.data.frame(patient_id) %>%
+    dplyr::mutate(outcome_flag = 1,
+                  binary_var = factor(rbinom(size,1,prob=c(0.7))),
+                  numeric_var1=round(rchisq(size,5)),
+                  numeric_var2=runif(size),
+                  cat_var=factor(rbinom(size,3,prob=c(0.5)))) %>%
+    dplyr::mutate(numeric_var1 = ifelse(outcome_flag==0, numeric_var1*numeric_var2,numeric_var1),
+                  cat_var = dplyr::case_when(cat_var==0~"A",
+                                             cat_var==1~"B",
+                                             cat_var==2~"C",
+                                             TRUE ~ "D"))
+  expect_no_error(report_characteristics(sample_data,
+                                         num.cols = "numeric_var1",
+                                         group = "cat_var",
+                                         return.summaries = c("mean_sd"),
+                                         return.summaries.bycol = NULL,
+                                         total.row = FALSE))
+})
+
+
+
+test_that("No error thrown if group is not null, format and total.row are TRUE and total.column is FALSE", {
+  size = 2500
+  patient_id = sample(1:1000000,size)
+  sample_data = as.data.frame(patient_id) %>%
+    dplyr::mutate(outcome_flag = 1,
+                  binary_var = factor(rbinom(size,1,prob=c(0.7))),
+                  numeric_var1=round(rchisq(size,5)),
+                  numeric_var2=runif(size),
+                  cat_var=factor(rbinom(size,3,prob=c(0.5)))) %>%
+    dplyr::mutate(numeric_var1 = ifelse(outcome_flag==0, numeric_var1*numeric_var2,numeric_var1),
+                  cat_var = dplyr::case_when(cat_var==0~"A",
+                                             cat_var==1~"B",
+                                             cat_var==2~"C",
+                                             TRUE ~ "D"))
+  expect_no_error(report_characteristics(sample_data,
+                                         num.cols = "numeric_var1",
+                                         group = "cat_var",
+                                         format = TRUE,
+                                         total.row = TRUE,
+                                         total.column = FALSE))
+})
+
