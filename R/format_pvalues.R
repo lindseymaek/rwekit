@@ -32,8 +32,6 @@ format_pvalues <- function(x,
                          p.value >= 0.01 & p.value < 0.095 ~ as.character(sprintf("%.2f", round(p.value,2))),
                          p.value >= 0.001 & p.value < 0.01 ~ as.character(sprintf("%.3f",round(p.value, 3))),
                          p.value < 0.001 ~ "<0.001")
-  } else {
-    stop("Error: Unknown input. Supply a defined integer value to the method argument.");
   }
 
   if (lead.zero == FALSE) {
