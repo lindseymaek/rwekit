@@ -3,7 +3,7 @@ Type: Package
 Title: Simple reporting toolkit for real-world evidence analysis
 Version: 0.0.0.9000
 Authors@R: person("Lindsey","Kornowske", email = "lindsey.kornowske@yahoo.com", role = c("aut", "cre"))
-Description: Simplifies reporting of common analyses in real-world evidence studies, 
+Description: Simplifies reporting of common analyses in real-world evidence studies 
     with functions for Table 1 customization and model object annotation.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -14,7 +14,8 @@ Imports:
     stringr,
     purrr,
     survival,
-    tidyr
+    tidyr,
+    checkmate
 Suggests: 
     knitr,
     rmarkdown,

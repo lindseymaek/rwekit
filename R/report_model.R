@@ -2,9 +2,9 @@
 #'
 #' Refine reporting of model summaries with labels and outcome frequencies.
 #'
-#' @param x A model object
+#' @param x A model object.
 #' @param outcome.var A string containing the name of the outcome variable, for models with binomial outcomes only. If provided with d, the frequency of the outcome for the levels of each factor variable will be reported.
-#' @param d The dataframe used to fit the model object, x.
+#' @param d The dataframe used to fit the model object, that will be used to compute the frequency distributions of the outcome variable.
 #' @param variable.labels A dataframe with the variable labels to be used to annotate and order variables in the model summary output. See Details.
 #' @param report.inverse A vector of strings containing the names of independent model variables for which the inverse of the estimate is desired for reporting.
 #' @param round.percent An integer representing the number of places to which the percent of the outcome should be rounded if ratio.include.percent=TRUE
@@ -19,11 +19,14 @@
 #' @export
 #'
 #' @details
-#' # variable.labels
-#' The dataframe passed to variable.labels must have two columns. The first column must contain the model terms exactly as the appear in the model. The second column must contain the desired labels. To view the expected values in column one, run report_model() supplying only the x argument and view the terms column.
+#' variable.labels
+#'
+#' The dataframe passed to variable.labels must have two columns. The first column must contain the model terms exactly as they appear in the model summary, including any concatenated names of variable levels.
+#' The second column must contain the desired labels. To view the expected values in column one, run report_model() supplying only the x argument and view the terms column.
 #' The order in which model terms are reported can be controlled by the order of the labels specified in the variable.labels dataframe.
 #'
-#' # p.round.method
+#' p.round.method
+#'
 #' Two methods are currently defined. Select 1 (default) to round values above 0.10 to two digits. Select 2 to round values above 0.10 to 1 digit.
 #' APA format is equivalent to method=1 when lead.zero=FALSE.
 #'
@@ -90,10 +93,6 @@ if (!is.null(outcome.var) & !is.null(d)) {
   checkmate::assert_character(outcome.var)
 
   outcome_levels <- d %>% dplyr::select(dplyr::all_of(outcome.var)) %>% dplyr::pull() %>% unique()
-
-  # if (length(outcome_levels) > 2 & verbose == TRUE) {
-  #   warning("outcome.var must be the name of a binary column in d")
-  # }
 
   checkmate::assert_vector(outcome_levels, max.len = 2, min.len = 2)
 
@@ -208,7 +207,6 @@ if (!is.null(outcome.var) & !is.null(d)) {
     dplyr::relocate(term, outcome_freq_comparison, outcome_freq_reference, estimate_CI, p_round)
 
 
-  # add labels
   if (!is.null(variable.labels)) {
 
     checkmate::assert_data_frame(variable.labels, max.cols = 2, min.cols = 2)
@@ -220,7 +218,6 @@ if (!is.null(outcome.var) & !is.null(d)) {
       dplyr::relocate(variable_labels) %>%
       dplyr::relocate(variables, .after = p_round)
 
-    # warn user if joining labels results in missing estimates
     checkmate::check_double(tidy_mod$estimate_CI, any.missing = FALSE)
 
     if (sum(is.na(tidy_mod$estimate_CI)) > 0) {

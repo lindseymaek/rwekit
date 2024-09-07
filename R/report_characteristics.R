@@ -1,36 +1,40 @@
-#' Report summary statistics for a population
+#' Report summary statistics on a dataframe
 #'
-#' Population characteristics are summarized according to data type:
+#' Summary statistics are computed on a dataframe according to data type:
 #' frequency distributions are reported for factor or categorical variables and measures of center and spread are reported for numeric variables.
-#' Options to stratify analysis by subgroup and tune reported statistics by input.
+#' Additional arguments provide options to stratify analysis by subgroup and tune reported statistics for each input.
 #'
-#' @param d A dataframe
-#' @param cat.cols Vector of column names for which to report frequency distributions.
-#' @param num.cols Vector of column names for which to report summary statistics.
-#' @param cols Vector of column names from which frequency distributions or summary statistics will be calculated based on data type. This is an alternative column input that is utilized only if cat.cols or num.cols is NULL
-#' @param group Optional column name to stratify by
-#' @param round.places Integer count of decimal places to include in summary statistic reporting, or an integer vector of length(cols) with the count of decimal places to be reported for each corresponding col
-#' @param round.percent Integer count of decimal places to include in percentage reporting
-#' @param percent.symbol Boolean: if TRUE then the % is included with percentage reporting
-#' @param format Boolean: if TRUE (default) then a formatted character column is generated with both the count and percentage concatenated as: "count (percentage)"
-#' @param total.column Boolean: if TRUE, then statistics are reported for the total dataset in addition to the levels of group
-#' @param total.row Boolean: if TRUE, then count of records in each column is reported
-#' @param group.exclude.levels Vector with optional levels of group to exclude from report
-#' @param col.exclude.levels Vector with optional levels of variables in cols to exclude from report
-#' @param return.summaries Vector of formatted summary statistics: "count_percent", "mean_sd", "median_iqr", "median_minmax". All included by default.
-#' @param return.summaries.bycol List of length(return.summaries) containing a boolean vectors of length(num.cols). If TRUE, the return.summaries value that corresponds to the position in the return.summaries list will be returned for the column that corresponds to the position in cols.
+#' @param d A dataframe.
+#' @param cat.cols A vector of column names for which to report frequency distributions.
+#' @param num.cols A vector of column names for which to report center and spread measures.
+#' @param group An optional string containing a column name to aggregate statistics by.
+#' @param round.places An integer count of decimal places to include in summary statistic reporting, or an integer vector of length(num.cols) with the count of decimal places to be reported for each corresponding element in num.cols.
+#' @param round.percent An integer count of decimal places to include in percentage reporting.
+#' @param percent.symbol A boolean: if TRUE then the percent symbol is included with percentage reporting.
+#' @param format A boolean: if TRUE (default) then summary statistics are formatted, see Details.
+#' @param total.column A boolean: if TRUE when group argument is provided, then statistics are reported for the total dataset in addition to the levels of group.
+#' @param total.row A boolean: if TRUE, then count of records in each column is reported.
+#' @param group.exclude.levels A vector with optional levels of group to exclude from report.
+#' @param col.exclude.levels A vector with optional levels of variables in cols to exclude from report.
+#' @param return.summaries A vector with names of formatted summary statistics to be returned, default is c("count_percent", "mean_sd"). See Details.
+#' @param return.summaries.bycol A list of length(return.summaries) containing a boolean vectors of length(num.cols). If TRUE, the return.summaries element that corresponds to the position in the return.summaries list will be returned for the column that corresponds to the position in cols. See Examples.
 #'
 #' @return If format is set to TRUE, a dataframe is returned with the summary statistics for all categorical and numeric columns. If format is set to FALSE, a list of the raw
 #' summary outputs will be returned for categorical and numeric columns separately.
 #'
 #' @details
+#' return.summaries
 #'
-#' # cols
+#' Defined values include c("count_percent", "mean_sd","median_iqr", "median_minmax"), and are returned only when format = TRUE. "count_percent" returns a frequency distribution formatted as "count (percent%)". Use percent.symbol to control inclusion of % in reporting.
+#' "mean_sd" returns mean and standard deviation formatted as "mean, sd". "median_iqr" returns the median with the 25th and 75th percentile as "median (25th percentile, 75th percentile)"
+#' "median_minmax" returns the median with the minimum and maximum formatted as "median (minimum-maximum)."
 #'
-#' The computation of summary statistics prioritizes the columns identified in the cat.cols and num.cols arguments, which allow the user to directly
-#' specify which features should be summarized for frequency distributions and summary statistics, respectively. Alternatively, if the cols argument is supplied and num.cols
-#' or cat.cols are NULL, then the datatype of cols will be used to identify which should be summarized for frequency distributions (factor or character type) and
-#' for summary statistics (numeric type).
+#' format
+#'
+#' When format is set to FALSE, a list of raw summary outputs will be returned for cat.cols and num.cols separately.
+#' For cat.cols, the unformatted summary includes the frequency (count), ratio (count/total), and percent.
+#' For num.cols, the unformatted summary includes the mean, standard deviation, minimum, maximum, median, 25th percentile, 75th percentile, count with observation, percent with observations out of total observations, count missing observations, percent missing observations out of total observations.
+#'
 #'
 #' @export
 #' @examples

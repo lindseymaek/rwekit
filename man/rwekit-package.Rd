@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Simplifies reporting of common analyses in real-world evidence studies, with functions for Table 1 customization and model object annotation.
+Simplifies reporting of common analyses in real-world evidence studies with functions for Table 1 customization and model object annotation.
 }
 \author{
 \strong{Maintainer}: Lindsey Kornowske \email{lindsey.kornowske@yahoo.com}

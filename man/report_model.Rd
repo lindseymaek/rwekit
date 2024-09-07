@@ -8,26 +8,22 @@ report_model(
   x,
   outcome.var = NULL,
   d = NULL,
-  factor.vars = NULL,
   variable.labels = NULL,
   report.inverse = NULL,
   round.percent = 0,
   round.estimate = 2,
   ratio.include.percent = FALSE,
-  verbose = TRUE,
   p.round.method = 1,
   p.lead.zero = TRUE,
   conf.level = 0.95
 )
 }
 \arguments{
-\item{x}{A model object}
+\item{x}{A model object.}
 
 \item{outcome.var}{A string containing the name of the outcome variable, for models with binomial outcomes only. If provided with d, the frequency of the outcome for the levels of each factor variable will be reported.}
 
-\item{d}{The dataframe used to fit the model object, x.}
-
-\item{factor.vars}{A vector of strings containing the names of independent model variables to be considered as factors for the reporting of outcome.var.}
+\item{d}{The dataframe used to fit the model object, that will be used to compute the frequency distributions of the outcome variable.}
 
 \item{variable.labels}{A dataframe with the variable labels to be used to annotate and order variables in the model summary output. See Details.}
 
@@ -39,11 +35,9 @@ report_model(
 
 \item{ratio.include.percent}{Report the percent of the outcome frequency. Default is FALSE.}
 
-\item{verbose}{See messages about model outputs. Default is TRUE}
+\item{p.round.method}{An integer corresponding to desired rounding convention. See Details.}
 
-\item{p.round.method}{integer corresponding to desired rounding convention. See Details.}
-
-\item{p.lead.zero}{if FALSE, no 0 will be reported in the place before the decimal. Defaults to TRUE.}
+\item{p.lead.zero}{Boolean: if FALSE, no 0 will be reported in the place before the decimal. Defaults to TRUE.}
 
 \item{conf.level}{The confidence level for the intervals passed to tidy() from the broom package. Default = 0.95}
 }
@@ -54,11 +48,13 @@ A dataframe with an labeled model summary
 Refine reporting of model summaries with labels and outcome frequencies.
 }
 \details{
-# variable.labels
+variable.labels
+
 The dataframe passed to variable.labels must have two columns. The first column must contain the model terms exactly as the appear in the model. The second column must contain the desired labels. To view the expected values in column one, run report_model() supplying only the x argument and view the terms column.
 The order in which model terms are reported can be controlled by the order of the labels specified in the variable.labels dataframe.
 
-# p.round.method
+p.round.method
+
 Two methods are currently defined. Select 1 (default) to round values above 0.10 to two digits. Select 2 to round values above 0.10 to 1 digit.
 APA format is equivalent to method=1 when lead.zero=FALSE.
 }
@@ -80,7 +76,7 @@ dplyr::mutate(outcome_flag = rbinom(size, 1, prob = c(0.1)),
                                            TRUE ~ "D"))
 
 # fit CoxPH model
-surv_mod = survival::coxph(survival::Surv(event = outcome_flag, time = numeric_var1) ~ binary_var + cat_var + numeric_var2,
+surv_mod=coxph(Surv(event=outcome_flag, time=numeric_var1) ~ binary_var+cat_var+numeric_var2,
 data = sample_data)
 
 # simple formatted model reporting
