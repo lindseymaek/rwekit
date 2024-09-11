@@ -50,7 +50,8 @@ Refine reporting of model summaries with labels and outcome frequencies.
 \details{
 variable.labels
 
-The dataframe passed to variable.labels must have two columns. The first column must contain the model terms exactly as the appear in the model. The second column must contain the desired labels. To view the expected values in column one, run report_model() supplying only the x argument and view the terms column.
+The dataframe passed to variable.labels must have two columns. The first column must contain the model terms exactly as they appear in the model summary, including any concatenated names of variable levels.
+The second column must contain the desired labels. To view the expected values in column one, run report_model() supplying only the x argument and view the terms column.
 The order in which model terms are reported can be controlled by the order of the labels specified in the variable.labels dataframe.
 
 p.round.method
