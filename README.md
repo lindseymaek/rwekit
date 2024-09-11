@@ -67,22 +67,22 @@ tbl1 <- report_characteristics(sample_data,
 
 print(tbl1)
 #>         var_name        measure_name         total outcome_flag0 outcome_flag1
-#> 1  records_count count_percent_total 2,500 (100.0)  2,267 (90.7)     233 (9.3)
-#> 2    binary_var1       count_percent  1,763 (70.5)  1,597 (70.4)    166 (71.2)
-#> 3       cat_varA       count_percent    304 (12.2)    279 (12.3)     25 (10.7)
-#> 4       cat_varB       count_percent    948 (37.9)    859 (37.9)     89 (38.2)
-#> 5       cat_varC       count_percent    928 (37.1)    844 (37.2)     84 (36.1)
-#> 6      cat_varNA       count_percent    320 (12.8)    285 (12.6)     35 (15.0)
-#> 7   numeric_var1       count_percent 2,500 (100.0) 2,267 (100.0)   233 (100.0)
-#> 8   numeric_var1          median_iqr      2 (1, 4)      2 (1, 3)      4 (3, 6)
-#> 9   numeric_var2       count_percent 2,500 (100.0) 2,267 (100.0)   233 (100.0)
-#> 10  numeric_var2             mean_sd    0.50, 0.29    0.50, 0.29    0.51, 0.28
+#> 1  records_count count_percent_total 2,500 (100.0)  2,215 (88.6)    285 (11.4)
+#> 2    binary_var1       count_percent  1,749 (70.0)  1,549 (69.9)    200 (70.2)
+#> 3       cat_varA       count_percent    339 (13.6)    297 (13.4)     42 (14.7)
+#> 4       cat_varB       count_percent    922 (36.9)    819 (37.0)    103 (36.1)
+#> 5       cat_varC       count_percent    928 (37.1)    825 (37.2)    103 (36.1)
+#> 6      cat_varNA       count_percent    311 (12.4)    274 (12.4)     37 (13.0)
+#> 7   numeric_var1       count_percent 2,500 (100.0) 2,215 (100.0)   285 (100.0)
+#> 8   numeric_var1          median_iqr      2 (1, 4)      2 (1, 3)      5 (3, 7)
+#> 9   numeric_var2       count_percent 2,500 (100.0) 2,215 (100.0)   285 (100.0)
+#> 10  numeric_var2             mean_sd    0.50, 0.29    0.50, 0.29    0.51, 0.29
 ```
 
 `report_characteristics()` pairs easily with user’s preferred workflows
 for formatting, as in this example using knitr with kableExtra:
 
-<table class="table" style="font-size: 11px; margin-left: auto; margin-right: auto;">
+<table class="table" style="font-size: 10px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
 Example Table 1. Summary measures reported for sample_data overall and
 by the value of outcome_flag
@@ -118,10 +118,10 @@ count_percent_total
 2,500 (100.0)
 </td>
 <td style="text-align:center;">
-2,267 (90.7)
+2,215 (88.6)
 </td>
 <td style="text-align:center;">
-233 (9.3)
+285 (11.4)
 </td>
 </tr>
 <tr>
@@ -132,13 +132,13 @@ binary_var1
 count_percent
 </td>
 <td style="text-align:center;">
-1,763 (70.5)
+1,749 (70.0)
 </td>
 <td style="text-align:center;">
-1,597 (70.4)
+1,549 (69.9)
 </td>
 <td style="text-align:center;">
-166 (71.2)
+200 (70.2)
 </td>
 </tr>
 <tr>
@@ -149,13 +149,13 @@ cat_varA
 count_percent
 </td>
 <td style="text-align:center;">
-304 (12.2)
+339 (13.6)
 </td>
 <td style="text-align:center;">
-279 (12.3)
+297 (13.4)
 </td>
 <td style="text-align:center;">
-25 (10.7)
+42 (14.7)
 </td>
 </tr>
 <tr>
@@ -166,13 +166,13 @@ cat_varB
 count_percent
 </td>
 <td style="text-align:center;">
-948 (37.9)
+922 (36.9)
 </td>
 <td style="text-align:center;">
-859 (37.9)
+819 (37.0)
 </td>
 <td style="text-align:center;">
-89 (38.2)
+103 (36.1)
 </td>
 </tr>
 <tr>
@@ -186,10 +186,10 @@ count_percent
 928 (37.1)
 </td>
 <td style="text-align:center;">
-844 (37.2)
+825 (37.2)
 </td>
 <td style="text-align:center;">
-84 (36.1)
+103 (36.1)
 </td>
 </tr>
 <tr>
@@ -200,13 +200,13 @@ cat_varNA
 count_percent
 </td>
 <td style="text-align:center;">
-320 (12.8)
+311 (12.4)
 </td>
 <td style="text-align:center;">
-285 (12.6)
+274 (12.4)
 </td>
 <td style="text-align:center;">
-35 (15.0)
+37 (13.0)
 </td>
 </tr>
 <tr>
@@ -220,10 +220,10 @@ count_percent
 2,500 (100.0)
 </td>
 <td style="text-align:center;">
-2,267 (100.0)
+2,215 (100.0)
 </td>
 <td style="text-align:center;">
-233 (100.0)
+285 (100.0)
 </td>
 </tr>
 <tr>
@@ -240,7 +240,7 @@ median_iqr
 2 (1, 3)
 </td>
 <td style="text-align:center;">
-4 (3, 6)
+5 (3, 7)
 </td>
 </tr>
 <tr>
@@ -254,10 +254,10 @@ count_percent
 2,500 (100.0)
 </td>
 <td style="text-align:center;">
-2,267 (100.0)
+2,215 (100.0)
 </td>
 <td style="text-align:center;">
-233 (100.0)
+285 (100.0)
 </td>
 </tr>
 <tr>
@@ -274,7 +274,7 @@ mean_sd
 0.50, 0.29
 </td>
 <td style="text-align:center;">
-0.51, 0.28
+0.51, 0.29
 </td>
 </tr>
 </tbody>
@@ -303,23 +303,22 @@ mod_report = report_model(surv_mod,
 
 print(mod_report)
 #>                              variable_labels outcome_freq_comparison
-#> 1       Categorical variable B (Reference A)             89/948 (9%)
-#> 2       Categorical variable C (Reference A)             84/928 (9%)
-#> 3 Binary variable (Reference negative class)          166/1,763 (9%)
+#> 1       Categorical variable B (Reference A)           103/922 (11%)
+#> 2       Categorical variable C (Reference A)           103/928 (11%)
+#> 3 Binary variable (Reference negative class)         200/1,749 (11%)
 #> 4                Uniform continuous variable                       -
 #>   outcome_freq_reference      estimate_CI p_round    variables  estimate
-#> 1            25/304 (8%) 1.00 (0.64-1.56)    0.99     cat_varB 0.9982981
-#> 2            25/304 (8%) 1.13 (0.72-1.77)    0.60     cat_varC 1.1285439
-#> 3            67/737 (9%) 0.88 (0.65-1.20)    0.43  binary_var1 0.8818705
-#> 4                      - 0.06 (0.03-0.10)  <0.001 numeric_var2 0.0582989
-#>   std.error     statistic      p.value   conf_low conf_high
-#> 1 0.2282691  -0.007461961 9.940463e-01 0.63820070 1.5615764
-#> 2 0.2282406   0.529827839 5.962313e-01 0.72150559 1.7652135
-#> 3 0.1580705  -0.795278186 4.264517e-01 0.64692655 1.2021390
-#> 4 0.2755473 -10.314644567 6.050477e-25 0.03397145 0.1000476
+#> 1           42/339 (12%) 1.22 (0.85-1.76)    0.28     cat_varB 1.2215772
+#> 2           42/339 (12%) 1.02 (0.71-1.46)    0.93     cat_varC 1.0157324
+#> 3           85/751 (11%) 1.16 (0.88-1.52)    0.30  binary_var1 1.1576230
+#> 4                      - 0.09 (0.06-0.15)  <0.001 numeric_var2 0.0945004
+#>   std.error    statistic      p.value   conf_low conf_high
+#> 1 0.1866419   1.07233583 2.835692e-01 0.84732697  1.761128
+#> 2 0.1840974   0.08479155 9.324271e-01 0.70806851  1.457080
+#> 3 0.1400439   1.04516370 2.959473e-01 0.87975469  1.523255
+#> 4 0.2316363 -10.18471949 2.320281e-24 0.06001564  0.148800
 ```
 
 `report_model()` pairs easily with user’s preferred workflows for
-formatting, as in this example using forestplot:
-
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="6" height="4" />
+formatting, as in this example using forestplot: ![rwekit
+logo](https://github.com/lindseymaek/rwekit/blob/main/man/figures/forestplot_example.png)

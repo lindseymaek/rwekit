@@ -88,7 +88,7 @@ tbl1 %>%
         caption = "Example Table 1. Summary measures reported for sample_data overall and by the value of outcome_flag",
         align = "llccc") %>%
   kable_styling(latex_options = "striped",
-                font_size = 11)
+                font_size = 10)
 ```
 
 ## Model Reporting Example
@@ -114,42 +114,48 @@ print(mod_report)
 ```
 
 `report_model()` pairs easily with user's preferred workflows for formatting, as in this example using forestplot: 
+![rwekit logo](https://github.com/lindseymaek/rwekit/blob/main/man/figures/forestplot_example.png)
 
-```{r, echo=FALSE, out.height=4, out.width=6}
-plot_labels = c("Variables", "Comparison", "Reference", "HR (95% CI)", "P")
-fp_label = as.data.frame(rbind(plot_labels,
-  mod_report[, c("variable_labels", "outcome_freq_comparison", "outcome_freq_reference", "estimate_CI", "p_round")]))
-fp_data = rbind(NA, mod_report)
-
-ticks = c(seq(0.01, 0.09, 0.01), seq(0.1, 1, 0.1), seq(2, 10, 1))
-ticks = sapply(ticks, log)
-ticks_label = c(TRUE, rep(FALSE,8), TRUE, rep(FALSE,8), TRUE, rep(FALSE,8), TRUE)
-attr(ticks, "labels") = ticks_label
-
-forestplot(fp_data,
-           mean = estimate,
-           lower = conf_low,
-           upper = conf_high,
-           graph.pos = 4,
-           labeltext = fp_label,
-           is.summary = c(TRUE, rep(FALSE,5)),
-           xticks = ticks,
-           xlog = TRUE,
-           lineheight = unit(0.75, "cm"),
-           hrzl_lines = gpar(col = "black"),
-           txt_gp = fpTxtGp(
-             label = gpar(cex = 1),
-             title = gpar(cex = 1.1),
-             xlab = gpar(cex = 1),
-             summary = gpar(cex = 1.1),
-             ticks = gpar(cex = 0.9)),
-           xlab = "HR (95% CI)",
-           title = "Example Figure. Model summary",
-           ci.vertices = FALSE,
-           boxsize = 0.1,
-           fn.ci_norm = fpDrawCircleCI)
-
-
-
+```{r forestplot, echo=FALSE}
+# plot_labels = c("Variables", "Comparison", "Reference", "HR (95% CI)", "P")
+# fp_label = as.data.frame(rbind(plot_labels,
+#   mod_report[, c("variable_labels", "outcome_freq_comparison", "outcome_freq_reference", "estimate_CI", "p_round")]))
+# fp_data = rbind(NA, mod_report)
+# 
+# ticks = c(seq(0.01, 0.09, 0.01), seq(0.1, 1, 0.1), seq(2, 10, 1))
+# ticks = sapply(ticks, log)
+# ticks_label = c(TRUE, rep(FALSE,8), TRUE, rep(FALSE,8), TRUE, rep(FALSE,8), TRUE)
+# attr(ticks, "labels") = ticks_label
+# 
+# fp = forestplot(fp_data,
+#            mean = estimate,
+#            lower = conf_low,
+#            upper = conf_high,
+#            graph.pos = 4,
+#            labeltext = fp_label,
+#            is.summary = c(TRUE, rep(FALSE,5)),
+#            xticks = ticks,
+#            xlog = TRUE,
+#            lineheight = unit(0.75, "cm"),
+#            colgap = unit(2, "mm"),
+#            graphwidth = unit(8, "cm"),
+#            hrzl_lines = gpar(col = "black"),
+#            txt_gp = fpTxtGp(
+#              label = gpar(cex = 0.8),
+#              title = gpar(cex = 0.8),
+#              xlab = gpar(cex = 0.8),
+#              summary = gpar(cex = 0.8),
+#              ticks = gpar(cex = 0.8)),
+#            xlab = "HR (95% CI)",
+#            title = "Example Figure. Model summary",
+#            ci.vertices = FALSE,
+#            boxsize = 0.1,
+#            fn.ci_norm = fpDrawCircleCI)
+# 
+# fp.grob = ggplotify::grid2grob(print(fp))
+# 
+# fp.format = cowplot::plot_grid(fp.grob)
+# 
+# cowplot::ggsave2(filename = "forestplot_example.png", plot = fp.format, dpi = 1200, units = "in", height = 3, width = 9, bg = "white")
 ```
 
