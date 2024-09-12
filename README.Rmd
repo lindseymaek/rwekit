@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 
 <!-- badges: start -->
-<img align="right" width="20%" src="https://github.com/lindseymaek/rwekit/blob/main/man/figures/logo.png">
+<img style="float:right" width="15%" alt="rwekit R package logo" src="https://github.com/lindseymaek/rwekit/blob/main/man/figures/logo.png">
 
 <!-- badges: end -->
 
