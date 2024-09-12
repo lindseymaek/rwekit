@@ -18,15 +18,13 @@ knitr::opts_chunk$set(
 
 
 <!-- badges: start -->
-<img style="float:right" width="10%" align = "right" alt="rwekit R package logo" src="https://github.com/lindseymaek/rwekit/blob/main/man/figures/logo.png">
+<img style="float:right" width="15%" align = "right" alt="rwekit R package logo" src="https://github.com/lindseymaek/rwekit/blob/main/man/figures/logo.png">
 
 <!-- badges: end -->
 
-Tools for Real World Evidence (RWE) reporting and beyond.
+Tools for Real World Evidence (RWE) reporting and beyond.   
 
-
-
-
+The aim of this package is to expedite repetitive programming tasks common for the RWE researcher. This package's main functionality aids preprocessing with quick method to set column types with `set_coltype_byname()`, provides a quick method for reporting characteristics for a dataframe (Table 1) with `report_characteristics()`, and supports easy model summary annotation with `report_model()`.
 
 ## Installation
 
