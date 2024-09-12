@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 
 Tools for Real World Evidence (RWE) reporting and beyond.   
 
-The aim of this package is to expedite repetitive programming tasks common for the RWE researcher. This package's main functionality aids preprocessing with quick method to set column types with `set_coltype_byname()`, provides a quick method for reporting characteristics for a dataframe (Table 1) with `report_characteristics()`, and supports easy model summary annotation with `report_model()`.
+The aim of this package is to expedite repetitive programming tasks common for the RWE researcher. This package's main functionality aids pre-processing with a quick method to set column types with `set_coltype_byname()`, enables fast Table 1-style reporting for a dataframe with `report_characteristics()`, and supports easy model summary annotation with `report_model()`.
 
 ## Installation
 

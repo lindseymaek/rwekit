@@ -13,11 +13,10 @@ Tools for Real World Evidence (RWE) reporting and beyond.
 
 The aim of this package is to expedite repetitive programming tasks
 common for the RWE researcher. This package’s main functionality aids
-preprocessing with quick method to set column types with
-`set_coltype_byname()`, provides a quick method for reporting
-characteristics for a dataframe (Table 1) with
-`report_characteristics()`, and supports easy model summary annotation
-with `report_model()`.
+pre-processing with a quick method to set column types with
+`set_coltype_byname()`, enables fast Table 1-style reporting for a
+dataframe with `report_characteristics()`, and supports easy model
+summary annotation with `report_model()`.
 
 ## Installation
 
@@ -75,16 +74,16 @@ tbl1 <- report_characteristics(sample_data,
 
 print(tbl1)
 #>         var_name        measure_name         total outcome_flag0 outcome_flag1
-#> 1  records_count count_percent_total 2,500 (100.0)  2,253 (90.1)     247 (9.9)
-#> 2    binary_var1       count_percent  1,720 (68.8)  1,560 (69.2)    160 (64.8)
-#> 3       cat_varA       count_percent    299 (12.0)    270 (12.0)     29 (11.7)
-#> 4       cat_varB       count_percent    960 (38.4)    869 (38.6)     91 (36.8)
-#> 5       cat_varC       count_percent    929 (37.2)    836 (37.1)     93 (37.7)
-#> 6      cat_varNA       count_percent    312 (12.5)    278 (12.3)     34 (13.8)
-#> 7   numeric_var1       count_percent 2,500 (100.0) 2,253 (100.0)   247 (100.0)
-#> 8   numeric_var1          median_iqr      2 (1, 4)      2 (1, 4)      4 (2, 7)
-#> 9   numeric_var2       count_percent 2,500 (100.0) 2,253 (100.0)   247 (100.0)
-#> 10  numeric_var2             mean_sd    0.50, 0.29    0.50, 0.29    0.47, 0.29
+#> 1  records_count count_percent_total 2,500 (100.0)  2,239 (89.6)    261 (10.4)
+#> 2    binary_var1       count_percent  1,767 (70.7)  1,581 (70.6)    186 (71.3)
+#> 3       cat_varA       count_percent    317 (12.7)    277 (12.4)     40 (15.3)
+#> 4       cat_varB       count_percent    939 (37.6)    841 (37.6)     98 (37.5)
+#> 5       cat_varC       count_percent    923 (36.9)    836 (37.3)     87 (33.3)
+#> 6      cat_varNA       count_percent    321 (12.8)    285 (12.7)     36 (13.8)
+#> 7   numeric_var1       count_percent 2,500 (100.0) 2,239 (100.0)   261 (100.0)
+#> 8   numeric_var1          median_iqr      2 (1, 4)      2 (1, 3)      4 (2, 7)
+#> 9   numeric_var2       count_percent 2,500 (100.0) 2,239 (100.0)   261 (100.0)
+#> 10  numeric_var2             mean_sd    0.50, 0.29    0.50, 0.29    0.49, 0.30
 ```
 
 `report_characteristics()` pairs easily with user’s preferred workflows
@@ -126,10 +125,10 @@ count_percent_total
 2,500 (100.0)
 </td>
 <td style="text-align:center;">
-2,253 (90.1)
+2,239 (89.6)
 </td>
 <td style="text-align:center;">
-247 (9.9)
+261 (10.4)
 </td>
 </tr>
 <tr>
@@ -140,13 +139,13 @@ binary_var1
 count_percent
 </td>
 <td style="text-align:center;">
-1,720 (68.8)
+1,767 (70.7)
 </td>
 <td style="text-align:center;">
-1,560 (69.2)
+1,581 (70.6)
 </td>
 <td style="text-align:center;">
-160 (64.8)
+186 (71.3)
 </td>
 </tr>
 <tr>
@@ -157,13 +156,13 @@ cat_varA
 count_percent
 </td>
 <td style="text-align:center;">
-299 (12.0)
+317 (12.7)
 </td>
 <td style="text-align:center;">
-270 (12.0)
+277 (12.4)
 </td>
 <td style="text-align:center;">
-29 (11.7)
+40 (15.3)
 </td>
 </tr>
 <tr>
@@ -174,13 +173,13 @@ cat_varB
 count_percent
 </td>
 <td style="text-align:center;">
-960 (38.4)
+939 (37.6)
 </td>
 <td style="text-align:center;">
-869 (38.6)
+841 (37.6)
 </td>
 <td style="text-align:center;">
-91 (36.8)
+98 (37.5)
 </td>
 </tr>
 <tr>
@@ -191,13 +190,13 @@ cat_varC
 count_percent
 </td>
 <td style="text-align:center;">
-929 (37.2)
+923 (36.9)
 </td>
 <td style="text-align:center;">
-836 (37.1)
+836 (37.3)
 </td>
 <td style="text-align:center;">
-93 (37.7)
+87 (33.3)
 </td>
 </tr>
 <tr>
@@ -208,13 +207,13 @@ cat_varNA
 count_percent
 </td>
 <td style="text-align:center;">
-312 (12.5)
+321 (12.8)
 </td>
 <td style="text-align:center;">
-278 (12.3)
+285 (12.7)
 </td>
 <td style="text-align:center;">
-34 (13.8)
+36 (13.8)
 </td>
 </tr>
 <tr>
@@ -228,10 +227,10 @@ count_percent
 2,500 (100.0)
 </td>
 <td style="text-align:center;">
-2,253 (100.0)
+2,239 (100.0)
 </td>
 <td style="text-align:center;">
-247 (100.0)
+261 (100.0)
 </td>
 </tr>
 <tr>
@@ -245,7 +244,7 @@ median_iqr
 2 (1, 4)
 </td>
 <td style="text-align:center;">
-2 (1, 4)
+2 (1, 3)
 </td>
 <td style="text-align:center;">
 4 (2, 7)
@@ -262,10 +261,10 @@ count_percent
 2,500 (100.0)
 </td>
 <td style="text-align:center;">
-2,253 (100.0)
+2,239 (100.0)
 </td>
 <td style="text-align:center;">
-247 (100.0)
+261 (100.0)
 </td>
 </tr>
 <tr>
@@ -282,7 +281,7 @@ mean_sd
 0.50, 0.29
 </td>
 <td style="text-align:center;">
-0.47, 0.29
+0.49, 0.30
 </td>
 </tr>
 </tbody>
@@ -311,20 +310,20 @@ mod_report = report_model(surv_mod,
 
 print(mod_report)
 #>                              variable_labels outcome_freq_comparison
-#> 1       Categorical variable B (Reference A)             91/960 (9%)
-#> 2       Categorical variable C (Reference A)            93/929 (10%)
-#> 3 Binary variable (Reference negative class)          160/1,720 (9%)
+#> 1       Categorical variable B (Reference A)            98/939 (10%)
+#> 2       Categorical variable C (Reference A)             87/923 (9%)
+#> 3 Binary variable (Reference negative class)         186/1,767 (11%)
 #> 4                Uniform continuous variable                       -
 #>   outcome_freq_reference      estimate_CI p_round    variables   estimate
-#> 1           29/299 (10%) 1.20 (0.79-1.83)    0.39     cat_varB 1.20311367
-#> 2           29/299 (10%) 1.27 (0.84-1.93)    0.26     cat_varC 1.27339213
-#> 3           87/780 (11%) 0.98 (0.73-1.31)    0.90  binary_var1 0.98104919
-#> 4                      - 0.06 (0.04-0.10)  <0.001 numeric_var2 0.06059972
-#>   std.error   statistic      p.value   conf_low conf_high
-#> 1 0.2143504   0.8626664 3.883209e-01 0.79040783 1.8313109
-#> 2 0.2131916   1.1336481 2.569422e-01 0.83848076 1.9338876
-#> 3 0.1489922  -0.1284140 8.978214e-01 0.73260253 1.3137513
-#> 4 0.2557867 -10.9601664 5.939008e-28 0.03670663 0.1000453
+#> 1           40/317 (13%) 0.91 (0.63-1.32)    0.62     cat_varB 0.90884832
+#> 2           40/317 (13%) 0.68 (0.46-0.99)    0.04     cat_varC 0.67619590
+#> 3           75/733 (10%) 1.12 (0.83-1.49)    0.46  binary_var1 1.11553417
+#> 4                      - 0.06 (0.04-0.09)  <0.001 numeric_var2 0.05729301
+#>   std.error   statistic      p.value   conf_low  conf_high
+#> 1 0.1905044  -0.5017053 6.158748e-01 0.62565334 1.32022833
+#> 2 0.1936440  -2.0205759 4.332369e-02 0.46263922 0.98833148
+#> 3 0.1478176   0.7396507 4.595120e-01 0.83494975 1.49040883
+#> 4 0.2411155 -11.8597782 1.914816e-32 0.03571608 0.09190509
 ```
 
 `report_model()` pairs easily with user’s preferred workflows for
