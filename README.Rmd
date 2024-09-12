@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 
 <!-- badges: start -->
-![rwekit logo](https://github.com/lindseymaek/rwekit/blob/main/man/figures/logo.png)
+![rwekit logo](https://github.com/lindseymaek/rwekit/blob/main/man/figures/logo.png){width=20%}
 <!-- badges: end -->
 
 Tools for Real World Evidence (RWE) reporting and beyond.
